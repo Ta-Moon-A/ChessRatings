@@ -4,12 +4,12 @@ function renderChart(params) {
 
   // exposed variables
   var attrs = {
-    svgWidth: 400,
-    svgHeight: 400,
-    marginTop: 5,
-    marginBottom: 5,
-    marginRight: 5,
-    marginLeft: 5,
+    svgWidth: 1000,
+    svgHeight: 500,
+    marginTop: 50,
+    marginBottom: 50,
+    marginRight: 50,
+    marginLeft: 50,
     container: 'body',
     data: null
   };
@@ -39,11 +39,12 @@ function renderChart(params) {
 
       //drawing containers
       var container = d3.select(this);
-
+      debugger;
       //add svg
-      var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
-      svg.attr('width', attrs.svgWidth)
-        .attr('height', attrs.svgHeight)
+      var svg = d3.select(this)
+        .append('svg')//patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
+        .attr('width', attrs.svgWidth)
+        .attr('height', attrs.svgHeight);
       // .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
       // .attr("preserveAspectRatio", "xMidYMid meet")
 
@@ -53,29 +54,53 @@ function renderChart(params) {
 
       var color = d3.scaleOrdinal(d3.schemeCategory20b);
 
-     debugger;
-         var xScale = d3.scalePoint()
-                        .domain(attrs.data.result.map(function (d) { return d.fullname}))
-                        .range([0, calc.chartWidth]);
+      debugger;
+      var xScale = d3.scalePoint()
+        .domain(attrs.data.result.map(function (d) { return d.fullname }))
+        .range([0, calc.chartWidth]);
 
-         var yScale = d3.scaleLinear()
-                        .domain(d3.extent(attrs.data.result, function (d) { return Math.max(d.classicalrating,d.bulletrating,d.blitzrating)}))
-                        .range([calc.chartHeight, 0]);
+      var yScale = d3.scaleLinear()
+        .domain(d3.extent(attrs.data.result, function (d) { return Math.max(d.classicalrating, d.bulletrating, d.blitzrating) }))
+        .range([calc.chartHeight, 0]);
 
-        var yAxis = d3.axisLeft().scale(yScale).tickSize(-calc.chartWidth);
-        var xAxis = d3.axisBottom().scale(xScale).tickSize(-calc.chartHeight);
+      var yAxis = d3.axisLeft().scale(yScale).tickSize(-calc.chartWidth);
+      var xAxis = d3.axisBottom().scale(xScale).tickSize(-calc.chartHeight);
+
+
+      chart.append("g")
+        .attr("transform", "translate(0," + calc.chartHeight + ")")
+        .attr('stroke-width', '2')
+        .attr("class", "xaxis");
+
+
+      chart.append("g")
+        .attr('stroke-width', '2')
+        .attr("class", "yaxis");
+
+      chart.selectAll("g .xaxis").transition().duration(attrs.transTimeOut).call(xAxis);
+      chart.selectAll("g .yaxis").transition().duration(attrs.transTimeOut).call(yAxis);
+      
+       chart.selectAll(".tick line")
+                    .attr('stroke', 'lightgrey')
+                    .attr('stroke-width', '0.7px')
+                    .attr('stroke-dasharray', '5,3');
+
+                chart.selectAll('.domain')
+                    .attr('stroke-width', '0.1px')
+                    .attr('stroke', 'lightgrey');
+
       // smoothly handle data updating
       updateData = function () {
-        
+
 
       }
-     
-     
-     
-     
-     
-     
-     
+
+
+
+
+
+
+
       //#########################################  UTIL FUNCS ##################################
 
       //enter exit update pattern principle

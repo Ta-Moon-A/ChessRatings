@@ -32,6 +32,10 @@
                 }, mrx1313: {
                     fullname: "პაპუნა მიშვიძე",
                     unit: 'internal'
+                },
+                 tamart: {
+                    fullname: "თამო",
+                    unit: 'internal'
                 }
             }
         };
@@ -81,8 +85,8 @@
                 console.log(data.result);
 
                 var chart = renderChart()
-                    .svgHeight(window.innerHeight - 30)
-                    .svgWidth(window.innerWidth - 30)
+                    // .svgHeight(window.innerHeight - 30)
+                    //.svgWidth(window.innerWidth - 30)
                     .container('#myGraph')
                     .data(data)
                     .debug(true)
