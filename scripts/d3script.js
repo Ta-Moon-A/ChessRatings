@@ -51,11 +51,31 @@ function renderChart(params) {
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
       chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
 
+      var color = d3.scaleOrdinal(d3.schemeCategory20b);
+
+     debugger;
+         var xScale = d3.scalePoint()
+                        .domain(attrs.data.result.map(function (d) { return d.fullname}))
+                        .range([0, calc.chartWidth]);
+
+         var yScale = d3.scaleLinear()
+                        .domain(d3.extent(attrs.data.result, function (d) { return Math.max(d.classicalrating,d.bulletrating,d.blitzrating)}))
+                        .range([calc.chartHeight, 0]);
+
+        var yAxis = d3.axisLeft().scale(yScale).tickSize(-calc.chartWidth);
+        var xAxis = d3.axisBottom().scale(xScale).tickSize(-calc.chartHeight);
       // smoothly handle data updating
       updateData = function () {
-
+        
 
       }
+     
+     
+     
+     
+     
+     
+     
       //#########################################  UTIL FUNCS ##################################
 
       //enter exit update pattern principle
@@ -79,7 +99,7 @@ function renderChart(params) {
 
           // parse variable names
           var groupVariables = stringified
-            //match var xxx= {};
+            //match var x-xx= {};
             .match(/var\s+([\w])+\s*=\s*{\s*}/gi)
             //match xxx
             .map(d => d.match(/\s+\w*/gi).filter(s => s.trim()))

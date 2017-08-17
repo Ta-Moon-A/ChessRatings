@@ -21,17 +21,81 @@
     <script src="scripts/d3script.js"></script>
 
     <script>
+        var data = {
+            users: {
+                nikodz: {
+                    fullname: "ნიკო ძნელაძე",
+                    unit: 'internal'
+                }, katamarani4: {
+                    fullname: "დათო ბუმბეიშვილი",
+                    unit: 'internal'
+                }, mrx1313: {
+                    fullname: "პაპუნა მიშვიძე",
+                    unit: 'internal'
+                }
+            }
+        };
 
 
-          var chart = renderChart()
-                .svgHeight(window.innerHeight-30)
-                .svgWidth(window.innerWidth-30)
-                .container('#myGraph')
-                .data('Pass Something Here and use it as attrs.data')
-                .debug(true)
-                .run()
+        // d3.xhr("https://lichess.org/api/users")
+        //     .header("Content-Type", "application/json")
+        //     .post( Object.keys(data.users).join(), function (err, rawData) {
+               
+
+        //     });
+
+        // d3.request("https://lichess.org/api/users").send("GET",  `"${Object.keys(data.users).join()}"`, function(err, rawData)
+        // {
+        //     debugger;
+        //       var result = JSON.parse(rawData);
+
+            
+        // });
+
+        //--------------------------- make queue for lichess calls ---------------------------
+        var queue = d3.queue();
+        Object.keys(data.users).forEach(username => {
+            queue.defer(d3.json, "https://lichess.org/api/user/" + username)
+        })
+
+        queue.awaitAll(ready);
+
+        function ready(err, result) {
+            console.log(arguments)
 
 
+             data.result = result.map(function (d) {
+                    return {
+                        id: d.id,
+                        isOnline: d.online,
+                        username: d.username,
+                        blitzrating: d.perfs.blitz.rating,
+                        bulletrating: d.perfs.bullet.rating,
+                        classicalrating: d.perfs.classical.rating,
+                        fullname: data.users[d.username].fullname,
+                        unit: data.users[d.username].unit
+                    }
+                });
+
+                console.log("result  ");
+                console.log(data.result);
+
+                var chart = renderChart()
+                    .svgHeight(window.innerHeight - 30)
+                    .svgWidth(window.innerWidth - 30)
+                    .container('#myGraph')
+                    .data(data)
+                    .debug(true)
+                    .run()
+
+
+
+         }
+        //------------------------------------------------------
+
+
+
+       
     </script>
 
 
