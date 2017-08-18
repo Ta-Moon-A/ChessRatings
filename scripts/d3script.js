@@ -11,7 +11,12 @@ function renderChart(params) {
     marginRight: 50,
     marginLeft: 50,
     container: 'body',
-    data: null
+    data: null,
+    spacing : {
+      bar : 3,
+      unit : 20,
+      category : 30
+    }
   };
 
   /*############### IF EXISTS OVERWRITE ATTRIBUTES FROM PASSED PARAM  #######  */
@@ -41,53 +46,179 @@ function renderChart(params) {
       var container = d3.select(this);
       debugger;
       //add svg
-      var svg = d3.select(this)
-        .append('svg')//patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
-        .attr('width', attrs.svgWidth)
-        .attr('height', attrs.svgHeight);
-      // .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
-      // .attr("preserveAspectRatio", "xMidYMid meet")
+      var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
+                .attr('width', attrs.svgWidth)
+                .attr('height', attrs.svgHeight)
+                .style('font-family','Helvetica');
+              //.attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
+              //.attr("preserveAspectRatio", "xMidYMid meet")
 
       //add container g element
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
-      chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
+          chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
 
-      var color = d3.scaleOrdinal(d3.schemeCategory20b);
+    
+      //########################################  SCALES ############################################
 
-      debugger;
-      var xScale = d3.scalePoint()
+      var scales = {};
+      
+
+      scales.yMax = d3.max(attrs.data.result, function (d) { return Math.max(d.classicalrating, d.bulletrating, d.blitzrating) });
+      scales.yMin = d3.min(attrs.data.result, function (d) { return Math.min(d.classicalrating, d.bulletrating, d.blitzrating) });
+     
+      scales.xScale = d3.scalePoint()
         .domain(attrs.data.result.map(function (d) { return d.fullname }))
         .range([0, calc.chartWidth]);
 
-      var yScale = d3.scaleLinear()
-        .domain(d3.extent(attrs.data.result, function (d) { return Math.max(d.classicalrating, d.bulletrating, d.blitzrating) }))
+      scales.yScale = d3.scaleLinear()
+        .domain([scales.yMin*0.9,  scales.yMax*1.1])
         .range([calc.chartHeight, 0]);
 
-      var yAxis = d3.axisLeft().scale(yScale).tickSize(-calc.chartWidth);
-      var xAxis = d3.axisBottom().scale(xScale).tickSize(-calc.chartHeight);
+     
+     //########################################  AXIS ############################################
+
+      var axis = {};
+
+      axis.yAxis = d3.axisLeft().scale(scales.yScale).tickSize(-calc.chartWidth);
+      axis.xAxis = d3.axisBottom().scale(scales.xScale).tickSize(-calc.chartHeight);
+
+      // var xAxisGroup = patternify({ container: chart, selector: 'x-axis-group', elementTag: 'g' })
+      //     xAxisGroup.attr("transform", "translate(0," + calc.chartHeight + ")")
+      //               .attr('stroke-width', '2');
 
 
-      chart.append("g")
-        .attr("transform", "translate(0," + calc.chartHeight + ")")
-        .attr('stroke-width', '2')
-        .attr("class", "xaxis");
+      var yAxisGroup = patternify({ container: chart, selector: 'y-axis-group', elementTag: 'g' })
+          yAxisGroup.attr('stroke-width', '2');
+
+      // xAxisGroup.transition().duration(attrs.transTimeOut).call(xAxis);
+      yAxisGroup.call(axis.yAxis);
+
+      chart.selectAll(".tick line")
+        .attr('stroke', 'lightgrey')
+        .attr('stroke-width', '0.3px')
+        .attr('stroke-dasharray', '5,3');
+
+      chart.selectAll('.domain')
+        .attr('stroke-width', '0.1px')
+        .attr('stroke', 'lightgrey');
 
 
-      chart.append("g")
-        .attr('stroke-width', '2')
-        .attr("class", "yaxis");
-
-      chart.selectAll("g .xaxis").transition().duration(attrs.transTimeOut).call(xAxis);
-      chart.selectAll("g .yaxis").transition().duration(attrs.transTimeOut).call(yAxis);
       
-       chart.selectAll(".tick line")
-                    .attr('stroke', 'lightgrey')
-                    .attr('stroke-width', '0.7px')
-                    .attr('stroke-dasharray', '5,3');
+      // ########################################  Category Groups ############################################
 
-                chart.selectAll('.domain')
-                    .attr('stroke-width', '0.1px')
-                    .attr('stroke', 'lightgrey');
+
+      // count width for elements 
+      var ratingCategoryGroupWidth = calc.chartWidth / attrs.data.ratingCategories.length;
+     
+      var unitGroupWidth = (ratingCategoryGroupWidth - attrs.spacing.category - attrs.spacing.unit)/ attrs.data.units.length;
+      var maxMemberNumber = GetMaxMemberNumberInUnits(attrs.data.result);
+      var ratingBarWidth = (unitGroupWidth - attrs.spacing.unit )/ maxMemberNumber -attrs.spacing.bar;
+
+
+
+      var ratingCategoryGroups = patternify({ container: chart, 
+                                              selector: 'category-group', 
+                                              elementTag: 'g', 
+                                              data: d=> {return  attrs.data.ratingCategories.map(c => c.name) }
+                                            });
+
+
+
+      ratingCategoryGroups.attr('transform', function (d, i) {
+        return 'translate(' + (ratingCategoryGroupWidth * i)  + ',' + 0 + ')'
+      });
+
+      ratingCategoryGroups.append('rect').attr('height', calc.chartHeight).attr('width', ratingCategoryGroupWidth).attr('opacity', (d, i) => 0.1 / (1 + i))
+
+      ratingCategoryGroups.append("text")
+                          .text(function(d){ return  attrs.data.ratingCategories.filter(v => v.name == d)[0].desc; })
+                          .attr("fill", function (d) { return "#769656" })
+                          .attr('alignment-baseline','hanging')
+                          .attr('text-anchor','middle')
+                          .style('font-weight', 'bold')
+                          .attr('font-size',50)
+                          .attr('y',40)
+                          .attr('opacity',0.4)
+                          .attr('x', ratingCategoryGroupWidth/2);
+
+
+      // ########################################  Unit Groups ############################################
+
+      var unitGroups = patternify({
+        container: ratingCategoryGroups,
+        selector: 'unit-group',
+        elementTag: 'g',
+        data: d => { return attrs.data.units.map(u => { return { unit: u, category: d } }) }
+      });
+
+      unitGroups.attr('transform', function (d, i) {
+        return 'translate(' + (unitGroupWidth * i) + ',' + 0 + ')'
+      });
+
+    // unitGroups.append('rect').attr('height', calc.chartHeight).attr('width', unitGroupWidth).attr('opacity', (d, i) => 0.2 / (1 + i))
+      // unitGroups.each((d,i)=>console.log(d));
+
+      // ########################################  Bar ############################################
+
+      var ratingBars = patternify({
+        container: unitGroups,
+        selector: 'rating-bar',
+        elementTag: 'g',
+        data: d => {
+            debugger;
+            return JSON.parse(JSON.stringify(attrs.data.result)).filter(item => item.unit == d.unit).map(function (userItem) {
+               debugger;
+            return Object.assign(userItem, d)
+          })
+        }
+      })
+      ratingBars.each(d => console.log(d))
+
+       ratingBars.attr('transform', function (d, i) {
+        return 'translate(' + (i *( ratingBarWidth + attrs.spacing.bar)) + ',' + scales.yScale(d[d.category]) + ')'
+      });
+
+
+      ratingBars.append("rect")
+        .attr("width", ratingBarWidth)
+        .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
+        .attr("fill", function (d) { return "#769656" });
+
+
+      ratingBars.append("text")
+         .text(d => d[d.category])
+        .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
+        .attr("fill", function (d) { return "grey" })
+        .attr('text-allignment','hanging')
+        .attr('y',18)
+        .attr('transform','rotate(-90)')
+
+
+
+
+
+
+
+
+
+
+
+
+
+      function GetMaxMemberNumberInUnits(initialData) {
+        var nestedData = d3.nest().key(function (d) { return d.unit; })
+          .rollup(function (leaves) {
+            return leaves.length;
+          }).entries(initialData);
+
+        var maxMemberNumber = Math.max.apply(Math, nestedData.map(function (o) { return o.value; }))
+
+
+
+        return maxMemberNumber;
+      }
+
+
 
       // smoothly handle data updating
       updateData = function () {
@@ -108,14 +239,17 @@ function renderChart(params) {
         var container = params.container;
         var selector = params.selector;
         var elementTag = params.elementTag;
+        var data = params.data || [selector];
 
         // pattern in action
-        var selection = container.selectAll('.' + selector).data([selector])
+        var selection = container.selectAll('.' + selector).data(data)
         selection.exit().remove();
         selection = selection.enter().append(elementTag).merge(selection)
         selection.attr('class', selector);
         return selection;
       }
+
+
 
       function debug() {
         if (attrs.isDebug) {
