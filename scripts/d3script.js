@@ -12,10 +12,10 @@ function renderChart(params) {
     marginLeft: 50,
     container: 'body',
     data: null,
-    spacing : {
-      bar : 3,
-      unit : 20,
-      category : 30
+    spacing: {
+      bar: 3,
+      unit: 20,
+      category: 30
     }
   };
 
@@ -42,40 +42,55 @@ function renderChart(params) {
       calc.chartWidth = attrs.svgWidth - attrs.marginRight - calc.chartLeftMargin;
       calc.chartHeight = attrs.svgHeight - attrs.marginBottom - calc.chartTopMargin;
 
+      //###################################### color ##########################################################
+
+      var METRONIC_DARK_COLORS = [//"#c5bf66","#BF55EC","#f36a5a","#EF4836","#9A12B3","#c8d046","#E26A6A","#32c5d2",
+        //"#8877a9","#ACB5C3","#e35b5a","#2f353b","#e43a45","#f2784b","#796799","#26C281",
+        //"#555555","#525e64","#8E44AD","#4c87b9","#bfcad1","#67809F","#578ebe","#c5b96b",
+        "#4DB3A2", "#e7505a", "#D91E18", "#1BBC9B", "#3faba4", "#d05454", "#8775a7", "#8775a7",
+        // "#8E44AD", "#f3c200", "#4B77BE", "#c49f47", "#44b6ae", "#36D7B7", "#94A0B2", "#9B59B6",
+        // "#E08283", "#3598dc", "#F4D03F", "#F7CA18", "#22313F", "#2ab4c0", "#5e738b", "#BFBFBF",
+        "#2C3E50", "#5C9BD1", "#95A5A6", "#E87E04", "#29b4b6", "#1BA39C"];
+
+      // var color = d3.scaleOrdinal(d3.schemeCategory20b);
+      var color = d3.scaleOrdinal().range(METRONIC_DARK_COLORS);
+
+      //###################################### color ##########################################################
+
       //drawing containers
       var container = d3.select(this);
       debugger;
       //add svg
       var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
-                .attr('width', attrs.svgWidth)
-                .attr('height', attrs.svgHeight)
-                .style('font-family','Helvetica');
-              //.attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
-              //.attr("preserveAspectRatio", "xMidYMid meet")
+        .attr('width', attrs.svgWidth)
+        .attr('height', attrs.svgHeight)
+        .style('font-family', 'Helvetica');
+      //.attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
+      //.attr("preserveAspectRatio", "xMidYMid meet")
 
       //add container g element
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
-          chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
+      chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
 
-    
+
       //########################################  SCALES ############################################
 
       var scales = {};
-      
+
 
       scales.yMax = d3.max(attrs.data.result, function (d) { return Math.max(d.classicalrating, d.bulletrating, d.blitzrating) });
       scales.yMin = d3.min(attrs.data.result, function (d) { return Math.min(d.classicalrating, d.bulletrating, d.blitzrating) });
-     
+
       scales.xScale = d3.scalePoint()
         .domain(attrs.data.result.map(function (d) { return d.fullname }))
         .range([0, calc.chartWidth]);
 
       scales.yScale = d3.scaleLinear()
-        .domain([scales.yMin*0.9,  scales.yMax*1.1])
+        .domain([scales.yMin * 0.9, scales.yMax * 1.1])
         .range([calc.chartHeight, 0]);
 
-     
-     //########################################  AXIS ############################################
+
+      //########################################  AXIS ############################################
 
       var axis = {};
 
@@ -88,7 +103,7 @@ function renderChart(params) {
 
 
       var yAxisGroup = patternify({ container: chart, selector: 'y-axis-group', elementTag: 'g' })
-          yAxisGroup.attr('stroke-width', '2');
+      yAxisGroup.attr('stroke-width', '2');
 
       // xAxisGroup.transition().duration(attrs.transTimeOut).call(xAxis);
       yAxisGroup.call(axis.yAxis);
@@ -103,43 +118,44 @@ function renderChart(params) {
         .attr('stroke', 'lightgrey');
 
 
-      
+
       // ########################################  Category Groups ############################################
 
 
       // count width for elements 
       var ratingCategoryGroupWidth = calc.chartWidth / attrs.data.ratingCategories.length;
-     
-      var unitGroupWidth = (ratingCategoryGroupWidth - attrs.spacing.category - attrs.spacing.unit)/ attrs.data.units.length;
+
+      var unitGroupWidth = (ratingCategoryGroupWidth - attrs.spacing.category - attrs.spacing.unit) / attrs.data.units.length;
       var maxMemberNumber = GetMaxMemberNumberInUnits(attrs.data.result);
-      var ratingBarWidth = (unitGroupWidth - attrs.spacing.unit )/ maxMemberNumber -attrs.spacing.bar;
+      var ratingBarWidth = (unitGroupWidth - attrs.spacing.unit) / maxMemberNumber - attrs.spacing.bar;
 
 
 
-      var ratingCategoryGroups = patternify({ container: chart, 
-                                              selector: 'category-group', 
-                                              elementTag: 'g', 
-                                              data: d=> {return  attrs.data.ratingCategories.map(c => c.name) }
-                                            });
+      var ratingCategoryGroups = patternify({
+        container: chart,
+        selector: 'category-group',
+        elementTag: 'g',
+        data: d => { return attrs.data.ratingCategories.map(c => c.name) }
+      });
 
 
 
       ratingCategoryGroups.attr('transform', function (d, i) {
-        return 'translate(' + (ratingCategoryGroupWidth * i)  + ',' + 0 + ')'
+        return 'translate(' + (ratingCategoryGroupWidth * i) + ',' + 0 + ')'
       });
 
       ratingCategoryGroups.append('rect').attr('height', calc.chartHeight).attr('width', ratingCategoryGroupWidth).attr('opacity', (d, i) => 0.1 / (1 + i))
 
       ratingCategoryGroups.append("text")
-                          .text(function(d){ return  attrs.data.ratingCategories.filter(v => v.name == d)[0].desc; })
-                          .attr("fill", function (d) { return "#769656" })
-                          .attr('alignment-baseline','hanging')
-                          .attr('text-anchor','middle')
-                          .style('font-weight', 'bold')
-                          .attr('font-size',50)
-                          .attr('y',40)
-                          .attr('opacity',0.4)
-                          .attr('x', ratingCategoryGroupWidth/2);
+        .text(function (d) { return attrs.data.ratingCategories.filter(v => v.name == d)[0].desc; })
+        .attr("fill", function (d) { return "#769656" })
+        .attr('alignment-baseline', 'hanging')
+        .attr('text-anchor', 'middle')
+        .style('font-weight', 'bold')
+        .attr('font-size', 50)
+        .attr('y', 40)
+        .attr('opacity', 0.4)
+        .attr('x', ratingCategoryGroupWidth / 2);
 
 
       // ########################################  Unit Groups ############################################
@@ -155,7 +171,7 @@ function renderChart(params) {
         return 'translate(' + (unitGroupWidth * i) + ',' + 0 + ')'
       });
 
-    // unitGroups.append('rect').attr('height', calc.chartHeight).attr('width', unitGroupWidth).attr('opacity', (d, i) => 0.2 / (1 + i))
+      // unitGroups.append('rect').attr('height', calc.chartHeight).attr('width', unitGroupWidth).attr('opacity', (d, i) => 0.2 / (1 + i))
       // unitGroups.each((d,i)=>console.log(d));
 
       // ########################################  Bar ############################################
@@ -165,34 +181,68 @@ function renderChart(params) {
         selector: 'rating-bar',
         elementTag: 'g',
         data: d => {
+          debugger;
+          var res = JSON.parse(JSON.stringify(attrs.data.result)).filter(item => item.unit == d.unit).map(function (userItem) {
             debugger;
-            return JSON.parse(JSON.stringify(attrs.data.result)).filter(item => item.unit == d.unit).map(function (userItem) {
-               debugger;
             return Object.assign(userItem, d)
+          });
+
+          return res.sort(function (x, y) {
+            return d3.descending(x[d.category], y[d.category]);
           })
+
+
         }
       })
       ratingBars.each(d => console.log(d))
 
-       ratingBars.attr('transform', function (d, i) {
-        return 'translate(' + (i *( ratingBarWidth + attrs.spacing.bar)) + ',' + scales.yScale(d[d.category]) + ')'
+      ratingBars.attr('transform', function (d, i) {
+        return 'translate(' + (i * (ratingBarWidth + attrs.spacing.bar)) + ',' + scales.yScale(d[d.category]) + ')'
       });
 
 
       ratingBars.append("rect")
         .attr("width", ratingBarWidth)
         .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
-        .attr("fill", function (d) { return "#769656" });
+        .attr("fill", function (d) {
+          return color(d.unit);
+          // return "#769656" 
+        });
 
 
       ratingBars.append("text")
-         .text(d => d[d.category])
-        .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
+        .text(d => d[d.category])
         .attr("fill", function (d) { return "grey" })
-        .attr('text-allignment','hanging')
-        .attr('y',18)
-        .attr('transform','rotate(-90)')
+        .attr('text-anchor', 'start')
+        .attr('y', ratingBarWidth / 2)
+        .attr('transform', 'rotate(-90)')
 
+
+      ratingBars.append("text")
+        .text(d => d.fullname)
+        .attr("fill", function (d) { return "grey" })
+        .attr('text-anchor', 'start')
+        .attr('y', ratingBarWidth / 2)
+        .attr('transform', 'rotate(-45)')
+
+      //################################## legend ######################################
+      var legend =  patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
+
+      var legendLines = patternify({ container: legend, selector: 'legend-line', elementTag: 'line' , data : attrs.data.units});
+          legendLines
+          .style("stroke", function (d, i) { return color(d); })
+          .style("stroke-width", 4)
+          .attr("x1", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i); })
+          .attr("y1", -attrs.marginTop/3)
+          .attr("x2", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i) + 30; })
+          .attr("y2", -attrs.marginTop/3);
+
+      var legendTexts = patternify({ container: legend, selector: 'legend-text', elementTag: 'text' , data : attrs.data.units});
+          legendTexts
+          .text(function (d, i) { return d; })
+          .attr("x", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i) + 35; })
+          .attr("y", -attrs.marginTop/3 +5)
+          .attr("class", "legendText");
 
 
 
