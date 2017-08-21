@@ -19,15 +19,16 @@
     </div>
     <script src="libs/d3.v4.min.js"></script>
     <script src="scripts/d3script.js"></script>
+    <script src="scripts/tooltip.js"></script>
 
     <script>
         var dummyData = [{
             "id": "nikodz",
-            "isOnline": false,
+            "isOnline": true,
             "username": "nikodz",
-            "blitzrating": 1787,
+            "blitzrating": 2500,
             "bulletrating": 1500,
-            "classicalrating": 1500,
+            "classicalrating": 500,
             "fullname": "ნიკო ძნელაძე",
             "unit": "internal"
         },
@@ -44,7 +45,7 @@
 
         {
             "id": "mrx1313",
-            "isOnline": false,
+            "isOnline": true,
             "username": "mrx1313",
             "blitzrating": 1110,
             "bulletrating": 1500,
@@ -52,16 +53,16 @@
             "fullname": "პაპუნა მიშვიძე",
             "unit": "internal"
         },
-        {
-            "id": "tamart",
-            "isOnline": false,
-            "username": "tamart",
-            "blitzrating": 1500,
-            "bulletrating": 995,
-            "classicalrating": 1663,
-            "fullname": "თამო",
-            "unit": "internal"
-        },
+        // {
+        //     "id": "tamart",
+        //     "isOnline": false,
+        //     "username": "tamart",
+        //     "blitzrating": 1500,
+        //     "bulletrating": 995,
+        //     "classicalrating": 1663,
+        //     "fullname": "თამო",
+        //     "unit": "internal"
+        // },
         {
             "id": "bumbeishvili",
             "isOnline": false,
@@ -199,8 +200,8 @@
         data.ratingCategories = ratingCategories;
         data.units = ["internal", "qc", "digital", "core"];
 
-        console.log("result  ");
-        console.log(data.result);
+        // console.log("result  ");
+        // console.log(data.result);
 
         var chart = renderChart()
             .svgHeight(window.innerHeight - 30)

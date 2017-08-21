@@ -5,9 +5,9 @@ function renderChart(params) {
   // exposed variables
   var attrs = {
     svgWidth: 1000,
-    svgHeight: 500,
+    svgHeight: 600,
     marginTop: 50,
-    marginBottom: 50,
+    marginBottom: 150,
     marginRight: 50,
     marginLeft: 50,
     container: 'body',
@@ -16,7 +16,20 @@ function renderChart(params) {
       bar: 3,
       unit: 20,
       category: 30
-    }
+    },
+    slicesOpacity: 0.3,
+    colors: {
+      point: "grey",
+      fullname: "#4B4948",
+      offline: "grey",
+      online: "lightgreen",
+      categorytext: ""
+    },
+    tooltipRows: [{ left: "User", right: "{fullname}" },
+    { left: "Blitz", right: "{blitzrating}" },
+    { left: "Bullet", right: "{bulletrating}" },
+    { left: "Classical", right: "{classicalrating}" },
+    { left: "Unit", right: "{unit}" }]
   };
 
   /*############### IF EXISTS OVERWRITE ATTRIBUTES FROM PASSED PARAM  #######  */
@@ -57,6 +70,7 @@ function renderChart(params) {
 
       //###################################### color ##########################################################
 
+
       //drawing containers
       var container = d3.select(this);
       debugger;
@@ -64,6 +78,7 @@ function renderChart(params) {
       var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
         .attr('width', attrs.svgWidth)
         .attr('height', attrs.svgHeight)
+        .attr('overflow', 'visible')
         .style('font-family', 'Helvetica');
       //.attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
       //.attr("preserveAspectRatio", "xMidYMid meet")
@@ -72,6 +87,47 @@ function renderChart(params) {
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
       chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
 
+      //################################   FILTERS  &   SHADOWS  ##################################
+
+      // Add filters ( Shadows)
+      var defs = svg.append("defs");
+
+      calc.dropShadowUrl = "id";
+      calc.filterUrl = `url(#id)`;
+      //Drop shadow filter
+      var dropShadowFilter = defs
+        .append("filter")
+        .attr("id", 'id')
+        .attr("height", "130%");
+      dropShadowFilter
+        .append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", 5)
+        .attr("result", "blur");
+      dropShadowFilter
+        .append("feOffset")
+        .attr("in", "blur")
+        .attr("dx", 2)
+        .attr("dy", 4)
+        .attr("result", "offsetBlur");
+
+      dropShadowFilter
+        .append("feFlood")
+        .attr("flood-color", "black")
+        .attr("flood-opacity", "0.4")
+        .attr("result", "offsetColor");
+      dropShadowFilter
+        .append("feComposite")
+        .attr("in", "offsetColor")
+        .attr("in2", "offsetBlur")
+        .attr("operator", "in")
+        .attr("result", "offsetBlur");
+
+      var feMerge = dropShadowFilter.append("feMerge");
+      feMerge.append("feMergeNode").attr("in", "offsetBlur");
+      feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+      // ################################ FILTERS  &   SHADOWS  END ##################################
 
       //########################################  SCALES ############################################
 
@@ -81,12 +137,13 @@ function renderChart(params) {
       scales.yMax = d3.max(attrs.data.result, function (d) { return Math.max(d.classicalrating, d.bulletrating, d.blitzrating) });
       scales.yMin = d3.min(attrs.data.result, function (d) { return Math.min(d.classicalrating, d.bulletrating, d.blitzrating) });
 
+
       scales.xScale = d3.scalePoint()
         .domain(attrs.data.result.map(function (d) { return d.fullname }))
         .range([0, calc.chartWidth]);
 
       scales.yScale = d3.scaleLinear()
-        .domain([scales.yMin * 0.9, scales.yMax * 1.1])
+        .domain([scales.yMin * 0.8, scales.yMax * 1.2])
         .range([calc.chartHeight, 0]);
 
 
@@ -194,59 +251,119 @@ function renderChart(params) {
 
         }
       })
-      ratingBars.each(d => console.log(d))
+      //ratingBars.each(d => console.log(d))
 
       ratingBars.attr('transform', function (d, i) {
-        return 'translate(' + (i * (ratingBarWidth + attrs.spacing.bar)) + ',' + scales.yScale(d[d.category]) + ')'
+        return 'translate(' + (i * (ratingBarWidth + attrs.spacing.bar)) + ',' + (scales.yScale(d[d.category])) + ')'
       });
 
 
+      // rating 
       ratingBars.append("rect")
         .attr("width", ratingBarWidth)
         .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
         .attr("fill", function (d) {
           return color(d.unit);
-          // return "#769656" 
         });
 
 
-      ratingBars.append("text")
+      // offline-online
+      ratingBars.append("rect")
+        .attr("width", ratingBarWidth)
+        .attr("height", 10)
+        .attr("fill", function (d) {
+          return d.isOnline ? attrs.colors.online : attrs.colors.offline;
+        });
+
+
+      // point text
+      ratingBars
+        .append('g')
+        .attr('transform', d => `translate(${ratingBarWidth},-5)`)
+        .append("text")
         .text(d => d[d.category])
-        .attr("fill", function (d) { return "grey" })
-        .attr('text-anchor', 'start')
-        .attr('y', ratingBarWidth / 2)
+        .attr("fill", attrs.colors.point)
+        .style('font-size', '12px')
         .attr('transform', 'rotate(-90)')
 
 
-      ratingBars.append("text")
+      // fullname text
+      ratingBars
+        .append('g')
+        .attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 10})`)
+        .append("text")
         .text(d => d.fullname)
-        .attr("fill", function (d) { return "grey" })
-        .attr('text-anchor', 'start')
-        .attr('y', ratingBarWidth / 2)
-        .attr('transform', 'rotate(-45)')
+        .attr('x', ratingBarWidth / 2)
+        .attr("fill", attrs.colors.fullname)
+        .attr('text-anchor', 'end')
+        .style('font-size', '10px')
+        .attr('transform', d => `rotate(-45)`);
 
       //################################## legend ######################################
-      var legend =  patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
 
-      var legendLines = patternify({ container: legend, selector: 'legend-line', elementTag: 'line' , data : attrs.data.units});
-          legendLines
-          .style("stroke", function (d, i) { return color(d); })
-          .style("stroke-width", 4)
-          .attr("x1", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i); })
-          .attr("y1", -attrs.marginTop/3)
-          .attr("x2", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i) + 30; })
-          .attr("y2", -attrs.marginTop/3);
+      var legend = patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
 
-      var legendTexts = patternify({ container: legend, selector: 'legend-text', elementTag: 'text' , data : attrs.data.units});
-          legendTexts
-          .text(function (d, i) { return d; })
-          .attr("x", function (d, i) { return ratingCategoryGroupWidth+100 + (100 * i) + 35; })
-          .attr("y", -attrs.marginTop/3 +5)
-          .attr("class", "legendText");
+      var legendItems = patternify({ container: legend, selector: 'legend-item', elementTag: 'g', data: attrs.data.units });
 
 
+      legendItems.append('line')
+        .style("stroke", function (d, i) { return color(d); })
+        .style("stroke-width", 4)
+        .attr("x1", function (d, i) { return 0; })
+        .attr("y1", attrs.marginTop)
+        .attr("x2", function (d, i) { return 30; })
+        .attr("y2", attrs.marginTop)
+        .attr("class", "legend-line");
 
 
+      legendItems.append('text')
+        .text(function (d, i) { return d; })
+        .attr("x", function (d, i) { return 35; })
+        .attr("y", attrs.marginTop + 5)
+        .attr("class", "legend-text");
+
+
+      var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 65)) / 2);
+
+      legendItems.each(function (d, i, arr) {
+        var wrapper = d3.select(this);
+        var text = wrapper.select('text');
+        var bbox = text.node().getBBox();
+        wrapper.attr('transform', 'translate(' + startX + ',-30)');
+        startX += bbox.width + 50;
+      })
+
+      // #####################################  events ############################################################
+
+      ratingBars.on('mouseenter', function (d) {
+        ratingBars.attr('filter', calc.filterUrl)
+          .filter(function (v) {
+
+            return v.id != d.id;
+          })
+          .attr('filter', 'none')
+          .attr('opacity', attrs.slicesOpacity);
+         debugger;
+       
+        var x =  d3.mouse(this)[0];
+        displayTooltip(
+          true,
+          chart,
+          attrs.tooltipRows,
+          'bottom',
+          GetTooltipPosition(d).x,
+          GetTooltipPosition(d).y,
+          d,
+          calc.dropShadowUrl
+        );
+
+
+
+      })
+        .on('mouseout', function (d) {
+          ratingBars.attr('opacity', 1).attr('filter', 'none');
+          displayTooltip(false, chart);
+        });
 
 
 
@@ -269,6 +386,33 @@ function renderChart(params) {
       }
 
 
+
+      function GetTooltipPosition(userInfo) {
+        var position = {
+          x: 0,
+          y: 0
+        };
+
+
+      
+        debugger;
+        var sortedData = attrs.data.result.filter(x => x.unit == userInfo.unit)
+                                          .sort(function (x, y) {
+                                            return d3.descending(x[userInfo.category], y[userInfo.category]);
+                                          });
+
+        position.y = scales.yScale(userInfo[userInfo.category]) - 50;
+
+        position.x = ratingCategoryGroupWidth * (attrs.data.ratingCategories.findIndex(x => x.name == userInfo.category)) +
+                     unitGroupWidth * attrs.data.units.indexOf(userInfo.unit) +
+                     ratingBarWidth * sortedData.findIndex(x => x.username == userInfo.username);
+
+       
+
+        
+        return position;
+
+      }
 
       // smoothly handle data updating
       updateData = function () {
