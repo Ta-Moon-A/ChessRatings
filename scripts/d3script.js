@@ -79,9 +79,9 @@ function renderChart(params) {
         .attr('width', attrs.svgWidth)
         .attr('height', attrs.svgHeight)
         .attr('overflow', 'visible')
-        .style('font-family', 'Helvetica');
-      //.attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
-      //.attr("preserveAspectRatio", "xMidYMid meet")
+        .style('font-family', 'Helvetica')
+      .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
       //add container g element
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
