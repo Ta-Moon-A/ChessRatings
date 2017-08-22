@@ -57,13 +57,7 @@ function renderChart(params) {
 
       //###################################### color ##########################################################
 
-      var METRONIC_DARK_COLORS = [//"#c5bf66","#BF55EC","#f36a5a","#EF4836","#9A12B3","#c8d046","#E26A6A","#32c5d2",
-        //"#8877a9","#ACB5C3","#e35b5a","#2f353b","#e43a45","#f2784b","#796799","#26C281",
-        //"#555555","#525e64","#8E44AD","#4c87b9","#bfcad1","#67809F","#578ebe","#c5b96b",
-        "#4DB3A2", "#e7505a", "#D91E18", "#1BBC9B", "#3faba4", "#d05454", "#8775a7", "#8775a7",
-        // "#8E44AD", "#f3c200", "#4B77BE", "#c49f47", "#44b6ae", "#36D7B7", "#94A0B2", "#9B59B6",
-        // "#E08283", "#3598dc", "#F4D03F", "#F7CA18", "#22313F", "#2ab4c0", "#5e738b", "#BFBFBF",
-        "#2C3E50", "#5C9BD1", "#95A5A6", "#E87E04", "#29b4b6", "#1BA39C"];
+      var METRONIC_DARK_COLORS = ["#1BBC9B","#E7505A","#E87E04","#5E738B","#578EBE"];
 
       // var color = d3.scaleOrdinal(d3.schemeCategory20b);
       var color = d3.scaleOrdinal().range(METRONIC_DARK_COLORS);
@@ -221,7 +215,21 @@ function renderChart(params) {
         container: ratingCategoryGroups,
         selector: 'unit-group',
         elementTag: 'g',
-        data: d => { return attrs.data.units.map(u => { return { unit: u, category: d } }) }
+        data: d => { 
+         
+          debugger;
+          d;
+
+         var usersData = JSON.parse(JSON.stringify(attrs.data.result));
+
+         var sortedUserData =  usersData.sort(function (x, y) {
+                          return d3.descending(x[d], y[d]);
+                       });
+
+        let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
+       
+
+        return uniqueUnits.map(u => { return { unit: u, category: d } }) }
       });
 
       unitGroups.attr('transform', function (d, i) {
@@ -290,7 +298,7 @@ function renderChart(params) {
       // fullname text
       ratingBars
         .append('g')
-        .attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 10})`)
+        .attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) +20 })`)
         .append("text")
         .text(d => d.fullname)
         .attr('x', ratingBarWidth / 2)
@@ -401,10 +409,20 @@ function renderChart(params) {
                                             return d3.descending(x[userInfo.category], y[userInfo.category]);
                                           });
 
+
+        var usersData = JSON.parse(JSON.stringify(attrs.data.result));
+
+         var sortedUserData =  usersData.sort(function (x, y) {
+                          return d3.descending(x[userInfo.category], y[userInfo.category]);
+                       });
+
+         let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
+       
+
         position.y = scales.yScale(userInfo[userInfo.category]) - 50;
 
         position.x = ratingCategoryGroupWidth * (attrs.data.ratingCategories.findIndex(x => x.name == userInfo.category)) +
-                     unitGroupWidth * attrs.data.units.indexOf(userInfo.unit) +
+                     unitGroupWidth * uniqueUnits.indexOf(userInfo.unit) +
                      ratingBarWidth * sortedData.findIndex(x => x.username == userInfo.username);
 
        
