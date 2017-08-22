@@ -21,73 +21,72 @@
     <script src="scripts/d3script.js"></script>
     <script src="scripts/tooltip.js"></script>
     <script src="scripts/processdata.js"></script>
+    <script src="scripts/dummydata.js"></script>
 
     <script>
         var ratingCategories = [{ name: "bulletrating", desc: "BULLET" },
                                 { name: "blitzrating", desc: "BLITZ" },
                                 { name: "classicalrating", desc: "CLASSICAL" }];
 
-        
-        //var units = ["internal", "qc", "digital", "core"];
-
-
         data.ratingCategories = ratingCategories;
-       // data.units = units;
+       
+
+        var dummyData = Object.getOwnPropertyNames(data.users).map(function (username) {
+            return {
+                id: username,
+                isOnline: false,
+                username: username,
+                blitzrating: 1500,
+                bulletrating: 1500,
+                classicalrating: 1500,
+                fullname: data.users[username].fullname,
+                unit: data.users[username].unit
+            }
+        });
 
 
-        // d3.xhr("https://lichess.org/api/users")
-        //     .header("Content-Type", "application/json")
-        //     .post( Object.keys(data.users).join(), function (err, rawData) {
+        data.result = dummyData;
+        let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
+        data.units = uniqueUnits;
+        // console.log("result  ");
+        // console.log(data.result);
+
+        var chart = renderChart()
+            .svgHeight(window.innerHeight - 30)
+            .svgWidth(window.innerWidth - 30)
+            .container('#myGraph')
+            .data(data)
+            .debug(true)
+            .run();
 
 
-        //     });
 
-        // d3.request("https://lichess.org/api/users").send("GET",  `"${Object.keys(data.users).join()}"`, function(err, rawData)
-        // {
-        //     debugger;
-        //       var result = JSON.parse(rawData);
+        var intervalID = setInterval(function () {
 
+            d3.json("/scripts/dummydata.js", function (error, callBackData) {
+                if (error) return console.warn(error);
 
-        // });
+                var result = [];
+                callBackData.forEach(function (d) {
+                    result.push({
+                        id: d.id,
+                        isOnline: d.online,
+                        username: d.username,
+                        blitzrating: d.perfs.blitz.rating,
+                        bulletrating: d.perfs.bullet.rating,
+                        classicalrating: d.perfs.classical.rating,
+                        fullname: data.users[d.username].fullname,
+                        unit: data.users[d.username].unit
+                    });
+                });
 
-        //--------------------------- make queue for lichess calls ---------------------------
-        var queue = d3.queue();
-        Object.keys(data.users).forEach(username => {
-            queue.defer(d3.json, "https://lichess.org/api/user/" + username)
-        })
+                data.result = result;
+                let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
+                data.units = uniqueUnits;
 
-        queue.awaitAll(ready);
-
-        function ready(err, result) {
-
-            data.result = result.map(function (d) {
-                return {
-                    id: d.id,
-                    isOnline: d.online,
-                    username: d.username,
-                    blitzrating: d.perfs.blitz.rating,
-                    bulletrating: d.perfs.bullet.rating,
-                    classicalrating: d.perfs.classical.rating,
-                    fullname: data.users[d.username].fullname,
-                    unit: data.users[d.username].unit
-                }
+                chart.data(data);
             });
-            
-            let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
-            data.units = uniqueUnits;
-            // console.log("result  ");
-            // console.log(data.result);
-
-            var chart = renderChart()
-                .svgHeight(window.innerHeight - 30)
-                .svgWidth(window.innerWidth - 30)
-                .container('#myGraph')
-                .data(data)
-                .debug(true)
-                .run()
-
-        }
-        
+        }, 1000);
     </script>
 
 

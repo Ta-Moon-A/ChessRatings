@@ -47,7 +47,7 @@ function renderChart(params) {
   //main chart object
   var main = function (selection) {
     selection.each(function scope() {
-
+      debugger;
       //calculated properties
       var calc = {}
       calc.chartLeftMargin = attrs.marginLeft;
@@ -57,7 +57,7 @@ function renderChart(params) {
 
       //###################################### color ##########################################################
 
-      var METRONIC_DARK_COLORS = ["#1BBC9B","#E7505A","#E87E04","#5E738B","#578EBE"];
+      var METRONIC_DARK_COLORS = ["#1BBC9B", "#E7505A", "#E87E04", "#5E738B", "#578EBE"];
 
       // var color = d3.scaleOrdinal(d3.schemeCategory20b);
       var color = d3.scaleOrdinal().range(METRONIC_DARK_COLORS);
@@ -67,15 +67,15 @@ function renderChart(params) {
 
       //drawing containers
       var container = d3.select(this);
-    
+
       //add svg
       var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
         .attr('width', attrs.svgWidth)
         .attr('height', attrs.svgHeight)
         .attr('overflow', 'visible')
         .style('font-family', 'Helvetica')
-      .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
-      .attr("preserveAspectRatio", "xMidYMid meet");
+        .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
+        .attr("preserveAspectRatio", "xMidYMid meet");
 
       //add container g element
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
@@ -215,18 +215,19 @@ function renderChart(params) {
         container: ratingCategoryGroups,
         selector: 'unit-group',
         elementTag: 'g',
-        data: d => { 
-        
-         var usersData = JSON.parse(JSON.stringify(attrs.data.result));
+        data: d => {
 
-         var sortedUserData =  usersData.sort(function (x, y) {
-                          return d3.descending(x[d], y[d]);
-                       });
+          var usersData = JSON.parse(JSON.stringify(attrs.data.result));
 
-        let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
-       
+          var sortedUserData = usersData.sort(function (x, y) {
+            return d3.descending(x[d], y[d]);
+          });
 
-        return uniqueUnits.map(u => { return { unit: u, category: d } }) }
+          let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
+
+
+          return uniqueUnits.map(u => { return { unit: u, category: d } })
+        }
       });
 
       unitGroups.attr('transform', function (d, i) {
@@ -243,9 +244,9 @@ function renderChart(params) {
         selector: 'rating-bar',
         elementTag: 'g',
         data: d => {
-       
+
           var res = JSON.parse(JSON.stringify(attrs.data.result)).filter(item => item.unit == d.unit).map(function (userItem) {
-          
+
             return Object.assign(userItem, d)
           });
 
@@ -295,7 +296,7 @@ function renderChart(params) {
       // fullname text
       ratingBars
         .append('g')
-        .attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) +20 })`)
+        .attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 20})`)
         .append("text")
         .text(d => d.fullname)
         .attr('x', ratingBarWidth / 2)
@@ -328,14 +329,14 @@ function renderChart(params) {
         .attr("class", "legend-text");
 
       debugger;
-      var startX =  ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
+      var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
 
       legendItems.each(function (d, i, arr) {
         var wrapper = d3.select(this);
         var text = wrapper.select('text');
         var bbox = text.node().getBBox();
         wrapper.attr('transform', 'translate(' + startX + ',-30)');
-        startX += bbox.width+50;
+        startX += bbox.width + 50;
       })
 
       // #####################################  events ############################################################
@@ -348,9 +349,9 @@ function renderChart(params) {
           })
           .attr('filter', 'none')
           .attr('opacity', attrs.slicesOpacity);
-      
-       
-        var x =  d3.mouse(this)[0];
+
+
+        var x = d3.mouse(this)[0];
         displayTooltip(
           true,
           chart,
@@ -399,49 +400,53 @@ function renderChart(params) {
         };
 
 
-      
-       
+
+
         var sortedData = attrs.data.result.filter(x => x.unit == userInfo.unit)
-                                          .sort(function (x, y) {
-                                            return d3.descending(x[userInfo.category], y[userInfo.category]);
-                                          });
+          .sort(function (x, y) {
+            return d3.descending(x[userInfo.category], y[userInfo.category]);
+          });
 
 
         var usersData = JSON.parse(JSON.stringify(attrs.data.result));
 
-         var sortedUserData =  usersData.sort(function (x, y) {
-                          return d3.descending(x[userInfo.category], y[userInfo.category]);
-                       });
+        var sortedUserData = usersData.sort(function (x, y) {
+          return d3.descending(x[userInfo.category], y[userInfo.category]);
+        });
 
-         let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
-       
+        let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
+
 
         position.y = scales.yScale(userInfo[userInfo.category]) - 50;
 
         position.x = ratingCategoryGroupWidth * (attrs.data.ratingCategories.findIndex(x => x.name == userInfo.category)) +
-                     unitGroupWidth * uniqueUnits.indexOf(userInfo.unit) +
-                     ratingBarWidth * sortedData.findIndex(x => x.username == userInfo.username);
+          unitGroupWidth * uniqueUnits.indexOf(userInfo.unit) +
+          ratingBarWidth * sortedData.findIndex(x => x.username == userInfo.username);
 
-       
 
-        
+
+
         return position;
 
       }
 
       // smoothly handle data updating
-      updateData = function () {
-
+      updateData = function (newdata) {
+       newdata.result.forEach(function (newuser) {
+          var olduser = attrs.data.result.filter(u => u.id == newuser.id);
+          olduser.id = newuser.id,
+            olduser.isOnline = newuser.isOnline,
+            olduser.username = newuser.username,
+            olduser.blitzrating = newuser.blitzrating,
+            olduser.bulletrating = newuser.bulletrating,
+            olduser.classicalrating = newuser.classicalrating,
+            olduser.fullname = newuser.fullname,
+            olduser.unit = newuser.unit
+        });
 
       }
 
-
-
-
-
-
-
-      //#########################################  UTIL FUNCS ##################################
+     //#########################################  UTIL FUNCS ##################################
 
       //enter exit update pattern principle
       function patternify(params) {
@@ -511,10 +516,13 @@ function renderChart(params) {
 
   //exposed update functions
   main.data = function (value) {
+
     if (!arguments.length) return attrs.data;
-    attrs.data = value;
+
     if (typeof updateData === 'function') {
-      updateData();
+      updateData(value);
+    } else {
+      attrs.data = value;
     }
     return main;
   }
