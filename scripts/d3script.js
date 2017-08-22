@@ -67,7 +67,7 @@ function renderChart(params) {
 
       //drawing containers
       var container = d3.select(this);
-      debugger;
+    
       //add svg
       var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
         .attr('width', attrs.svgWidth)
@@ -216,10 +216,7 @@ function renderChart(params) {
         selector: 'unit-group',
         elementTag: 'g',
         data: d => { 
-         
-          debugger;
-          d;
-
+        
          var usersData = JSON.parse(JSON.stringify(attrs.data.result));
 
          var sortedUserData =  usersData.sort(function (x, y) {
@@ -246,9 +243,9 @@ function renderChart(params) {
         selector: 'rating-bar',
         elementTag: 'g',
         data: d => {
-          debugger;
+       
           var res = JSON.parse(JSON.stringify(attrs.data.result)).filter(item => item.unit == d.unit).map(function (userItem) {
-            debugger;
+          
             return Object.assign(userItem, d)
           });
 
@@ -330,15 +327,15 @@ function renderChart(params) {
         .attr("y", attrs.marginTop + 5)
         .attr("class", "legend-text");
 
-
-      var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 65)) / 2);
+      debugger;
+      var startX =  ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
 
       legendItems.each(function (d, i, arr) {
         var wrapper = d3.select(this);
         var text = wrapper.select('text');
         var bbox = text.node().getBBox();
         wrapper.attr('transform', 'translate(' + startX + ',-30)');
-        startX += bbox.width + 50;
+        startX += bbox.width+50;
       })
 
       // #####################################  events ############################################################
@@ -351,7 +348,7 @@ function renderChart(params) {
           })
           .attr('filter', 'none')
           .attr('opacity', attrs.slicesOpacity);
-         debugger;
+      
        
         var x =  d3.mouse(this)[0];
         displayTooltip(
@@ -403,7 +400,7 @@ function renderChart(params) {
 
 
       
-        debugger;
+       
         var sortedData = attrs.data.result.filter(x => x.unit == userInfo.unit)
                                           .sort(function (x, y) {
                                             return d3.descending(x[userInfo.category], y[userInfo.category]);

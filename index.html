@@ -28,11 +28,11 @@
                                 { name: "classicalrating", desc: "CLASSICAL" }];
 
         
-        var units = ["internal", "qc", "digital", "core"];
+        //var units = ["internal", "qc", "digital", "core"];
 
 
         data.ratingCategories = ratingCategories;
-        data.units = units;
+       // data.units = units;
 
 
         // d3.xhr("https://lichess.org/api/users")
@@ -72,7 +72,9 @@
                     unit: data.users[d.username].unit
                 }
             });
-
+            
+            let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
+            data.units = uniqueUnits;
             // console.log("result  ");
             // console.log(data.result);
 
