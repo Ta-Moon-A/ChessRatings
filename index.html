@@ -62,8 +62,11 @@
 
 
         var intervalID = setInterval(function () {
+            debugger;
+            var usernames = Object.keys(data.users).join();
 
-            d3.json("/scripts/dummydata.js", function (error, callBackData) {
+
+            d3.json("http://node-lichess-proxy.herokuapp.com/?"+usernames, function (error, callBackData) {
                 if (error) return console.warn(error);
 
                 var result = [];
