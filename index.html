@@ -59,12 +59,17 @@
             .debug(true)
             .run();
 
-
+        GetData();
 
         var intervalID = setInterval(function () {
             debugger;
-            var usernames = Object.keys(data.users).join();
+           
+          GetData();
+        }, 20000);
 
+        function GetData(){
+             
+             var usernames = Object.keys(data.users).join();
 
             d3.json("https://node-lichess-proxy.herokuapp.com/?"+usernames, function (error, callBackData) {
                 if (error) return console.warn(error);
@@ -89,7 +94,10 @@
 
                 chart.data(data);
             });
-        }, 1000);
+        }
+
+
+
     </script>
 
 

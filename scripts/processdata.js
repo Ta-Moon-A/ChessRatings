@@ -1,7 +1,7 @@
 var data = {
             users: {
                 nikodz: {
-                    fullname: "ნიკო ძნელაძე",
+                    fullname: "ნიკო",
                     unit: 'internal'
                 }, katamarani4: {
                     fullname: "გრიშა",
@@ -26,72 +26,70 @@ var data = {
                     fullname: "თამარ ტაკიძე",
                     unit: 'qc'
                 }
-               
-
-               ,
-                coachvovk: {
-                    fullname: "თამარ ტაკიძე",
+                ,
+                werwolfgambit: {
+                    fullname: "ვაჩე",
                     unit: 'internal'
                 }
 
                 ,
                 jsl: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'internal'
                 }
                 ,
             //     Esgor: {
-            //         fullname: "თამარ ტაკიძე",
+            //         fullname: "xxx",
             //         unit: 'internal'
             //     }
             //     ,
             //     tamik: {
-            //         fullname: "თამარ ტაკიძე",
+            //         fullname: "xxx",
             //         unit: 'internal'
             //     }
             //     ,
                 peresin: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'internal'
                 }
                 ,
                 Bermage: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'internal'
                 }
                 ,
                 zettma: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'internal'
                 }
                 ,
                 Waikato: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'core'
                 }
                 ,
                 ljdr: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'core'
                 }
                 ,
             //     drg2: {
-            //         fullname: "თამარ ტაკიძე",
+            //         fullname: "xxx",
             //         unit: 'ba'
             //     }
                 //,
                 aragasgl: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'core'
                 }
                 ,
                 chiquitita: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'core'
                 }
                 ,
                 chiquitita: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "xxx",
                     unit: 'digital'
                 }
                 
