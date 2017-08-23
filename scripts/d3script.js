@@ -67,7 +67,8 @@ function renderChart(params) {
       var color = d3.scaleOrdinal().range(METRONIC_DARK_COLORS);
 
       //###################################### color ##########################################################
-
+      
+           
 
       //drawing containers
       var container = d3.select(this);
@@ -85,29 +86,7 @@ function renderChart(params) {
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
       chart.attr('transform', 'translate(' + (calc.chartLeftMargin) + ',' + calc.chartTopMargin + ')');
 
-     DrawChart(attrs, calc);
 
-      // smoothly handle data updating
-      updateData = function (newdata) {
-       newdata.result.forEach(function (newuser) {
-          var olduser = attrs.data.result.filter(u => u.id == newuser.id);
-          olduser.id = newuser.id,
-            olduser.isOnline = newuser.isOnline,
-            olduser.username = newuser.username,
-            olduser.blitzrating = newuser.blitzrating,
-            olduser.bulletrating = newuser.bulletrating,
-            olduser.classicalrating = newuser.classicalrating,
-            olduser.fullname = newuser.fullname,
-            olduser.unit = newuser.unit
-        });
-       
-
-        DrawChart(attrs, calc);
-      }
-
-      function DrawChart(attrs, calc)
-      {
-          
       //################################   FILTERS  &   SHADOWS  ##################################
 
       // Add filters ( Shadows)
@@ -456,6 +435,32 @@ function renderChart(params) {
         return position;
 
       }
+
+    
+
+      // smoothly handle data updating
+      updateData = function (newdata) {
+        
+       newdata.result.forEach(function (newuser) {
+          var olduser = attrs.data.result.filter(u => u.id == newuser.id);
+          
+            olduser.id = newuser.id,
+            olduser.isOnline = newuser.isOnline,
+            olduser.username = newuser.username,
+            olduser.blitzrating = newuser.blitzrating,
+            olduser.bulletrating = newuser.bulletrating,
+            olduser.classicalrating = newuser.classicalrating,
+            olduser.fullname = newuser.fullname,
+            olduser.unit = newuser.unit
+        });
+       
+        main.run();
+       
+      }
+
+      function DrawChart(attrs, calc)
+      {
+     
       }
 
      //#########################################  UTIL FUNCS ##################################
