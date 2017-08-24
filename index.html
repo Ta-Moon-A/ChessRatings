@@ -25,56 +25,60 @@
 
     <script>
         var ratingCategories = [{ name: "bulletrating", desc: "BULLET" },
-                                { name: "blitzrating", desc: "BLITZ" },
-                                { name: "classicalrating", desc: "CLASSICAL" }];
+        { name: "blitzrating", desc: "BLITZ" },
+        { name: "classicalrating", desc: "CLASSICAL" }];
 
         data.ratingCategories = ratingCategories;
-       
 
-        var dummyData = Object.getOwnPropertyNames(data.users).map(function (username) {
-            return {
-                id: username,
-                isOnline: false,
-                username: username,
-                blitzrating: 1500,
-                bulletrating: 1500,
-                classicalrating: 1500,
-                fullname: data.users[username].fullname,
-                unit: data.users[username].unit
-            }
+
+        var usernames = Object.keys(data.users).join();
+        var chart;
+
+        d3.json("https://node-lichess-proxy.herokuapp.com/?" + usernames, function (error, callBackData) {
+            if (error) return console.log(error);
+
+            var result = [];
+            callBackData.forEach(function (d) {
+                result.push({
+                    id: d.id,
+                    isOnline: d.online,
+                    username: d.username,
+                    blitzrating: d.perfs.blitz.rating,
+                    bulletrating: d.perfs.bullet.rating,
+                    classicalrating: d.perfs.classical.rating,
+                    fullname: data.users[d.username].fullname,
+                    unit: data.users[d.username].unit
+                });
+            });
+
+            data.result = result;
+            let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
+            data.units = uniqueUnits;
+
+            chart = renderChart()
+                .svgHeight(window.innerHeight - 30)
+                .svgWidth(window.innerWidth - 30)
+                .container('#myGraph')
+                .data(data)
+                .debug(true)
+                .run();
+
+
+            var intervalID = setInterval(function () {
+
+                GetData();
+            }, 20000);
+
+
         });
 
 
-        data.result = dummyData;
-        let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
-        data.units = uniqueUnits;
-        // console.log("result  ");
-        // console.log(data.result);
 
-        var chart = renderChart()
-            .svgHeight(window.innerHeight - 30)
-            .svgWidth(window.innerWidth - 30)
-            .container('#myGraph')
-            .data(data)
-            .debug(true)
-            .run();
+      function GetData() {
 
-        GetData();
+            var usernames = Object.keys(data.users).join();
 
-        setTimeout(GetData(),2000);
-
-
-        var intervalID = setInterval(function () {
-            debugger;
-           
-          GetData();
-        }, 20000);
-
-        function GetData(){
-             
-             var usernames = Object.keys(data.users).join();
-
-            d3.json("https://node-lichess-proxy.herokuapp.com/?"+usernames, function (error, callBackData) {
+            d3.json("https://node-lichess-proxy.herokuapp.com/?" + usernames, function (error, callBackData) {
                 if (error) return console.warn(error);
 
                 var result = [];
@@ -96,11 +100,11 @@
                 data.units = uniqueUnits;
 
                 chart.data(data);
+
+
+
             });
         }
-
-
-
     </script>
 
 

@@ -14,8 +14,8 @@ function renderChart(params) {
     data: null,
     spacing: {
       bar: 2,
-      unit: 15,
-      category: 20
+      unit: 30,
+      category: 3
     },
     slicesOpacity: 0.3,
     colors: {
@@ -47,8 +47,6 @@ function renderChart(params) {
   //main chart object
   var main = function (selection) {
     selection.each(function scope() {
-      debugger;
-
 
       var scales = {};
       var axis = {};
@@ -259,15 +257,31 @@ function renderChart(params) {
           });
 
           let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
+          
+          
+          
+          //var unitAvgValue = d3.mean(selectedData,function(d) { return +d.value});
 
 
-          return uniqueUnits.map(u => { return { unit: u, category: d } })
-        }
+
+          return uniqueUnits.map(u => { 
+                    return { 
+                        unit: u, 
+                        category: d ,
+                        unitAvg : d3.mean(JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u) , function(i) { return +i[d]}),
+                       // unitMemberNumber : JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u && x[d] >= this.$unitAvg).length
+                  }
+              })
+          }
       });
 
       unitGroups.attr('transform', function (d, i) {
         return 'translate(' + (unitGroupWidth * i) + ',' + 0 + ')'
       });
+
+                    
+
+
 
       // unitGroups.append('rect').attr('height', calc.chartHeight).attr('width', unitGroupWidth).attr('opacity', (d, i) => 0.2 / (1 + i))
       // unitGroups.each((d,i)=>console.log(d));
@@ -321,15 +335,15 @@ function renderChart(params) {
 
       ratingBarRects.enter()
         .append('rect')
-              .attr("width", ratingBarWidth)
+        .attr("width", ratingBarWidth)
         .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
         .attr("height", function (d) { return 0; })
         .merge(ratingBarRects)
 
-        .attr('y',  function (d) { return calc.chartHeight - scales.yScale(d[d.category])})
-        .attr("height",function (d) { return 0})
+        .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]) })
+        .attr("height", function (d) { return 0 })
 
-        .transition().duration(1000)
+        //.transition().duration(1000)
         .attr('class', 'rating-bar-rect')
         .attr("width", ratingBarWidth)
         .attr('y', 0)
@@ -365,6 +379,7 @@ function renderChart(params) {
         .attr('class', 'rating-bar-status-rect')
         .attr("width", ratingBarWidth)
         .attr("height", 10)
+        .attr('rx','5')
         .attr("fill", function (d) {
           return d.isOnline ? attrs.colors.online : attrs.colors.offline;
         });
@@ -392,7 +407,7 @@ function renderChart(params) {
       ratingBarPointTexts
         .text(d => d[d.category])
         .attr("fill", attrs.colors.point)
-        .style('font-size', '12px')
+        .style('font-size', '8px')
         .attr('transform', 'rotate(-90)')
 
       var ratingBarNameTextGroups = patternify({
@@ -421,7 +436,61 @@ function renderChart(params) {
         .attr('text-anchor', 'end')
         .style('font-size', '10px')
         .attr('transform', d => `rotate(-45)`);
+      
+      // ################################## avg lines  ##################################
+      
+      var unitAvgFlags = patternify({
+                                  container: unitGroups,
+                                  selector: 'unit-group-avg-flag-group',
+                                  elementTag: 'g',
+                                  data: d => [d]  
+                                });
 
+      unitAvgFlags.attr('transform', d => `translate(-10,${scales.yScale(d.unitAvg)})`);
+       
+
+
+      unitAvgFlags.append('rect')
+        .attr("width", 20)
+        .attr("height", 10)
+        .attr('x',-20)
+        .attr("fill", function (d) {
+          return 'grey';
+        });
+
+      
+
+
+      unitAvgFlags.append('rect')
+        .attr("width",  Math.sqrt(50))
+        .attr("height", Math.sqrt(50))
+        .attr("fill", function (d) {
+          return 'grey';
+        })
+        .attr('transform',`rotate(45) `);
+
+
+      unitAvgFlags.append('text')
+      .text(d => {return Math.floor(d.unitAvg)})
+        
+        .attr('x',-20)
+        .attr('y',8)
+        .attr("fill", function (d) {
+          return 'white';
+        })
+        .attr('font-size', 8);
+
+      // unitAvgLines
+      //   .style("stroke", function (d, i) {  return 'black'; })
+      //   .style("stroke-width", 1)
+      //   .style("stroke-dasharray","5,5")
+      //   .attr("x1",  -30 )
+      //   .attr("y1", function(d) { return  scales.yScale(d.unitAvg) })
+      //   .attr("x2", function (d, i) { return unitGroupWidth-10; } )
+      //   .attr("y2", function(d) { return scales.yScale(d.unitAvg) });          
+
+
+        
       //################################## legend ######################################
 
       var legend = patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
@@ -463,7 +532,7 @@ function renderChart(params) {
         .attr("class", "legend-text");
 
 
-      debugger;
+
       var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
 
       legendItems.each(function (d, i, arr) {
@@ -477,7 +546,8 @@ function renderChart(params) {
       // #####################################  events ############################################################
 
       ratingBars.on('mouseenter', function (d) {
-        ratingBars.attr('filter', calc.filterUrl)
+        
+        ratingBarRects.attr('filter', calc.filterUrl)
           .filter(function (v) {
 
             return v.id != d.id;
@@ -502,7 +572,7 @@ function renderChart(params) {
 
       })
         .on('mouseout', function (d) {
-          ratingBars.attr('opacity', 1).attr('filter', 'none');
+          ratingBarRects.attr('opacity', 1).attr('filter', 'none');
           displayTooltip(false, chart);
         });
 
@@ -583,7 +653,6 @@ function renderChart(params) {
             olduser.unit = newuser.unit
         });
 
-        debugger;
         main.run();
 
       }
@@ -662,7 +731,6 @@ function renderChart(params) {
   main.data = function (value) {
 
     if (!arguments.length) return attrs.data;
-    debugger;
     if (typeof updateData === 'function') {
       updateData(value);
     } else {
