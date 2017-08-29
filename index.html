@@ -6,14 +6,19 @@
     <meta charset="UTF-8">
     <title>Chart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="stylesheet" type="text/css" href="/libs/content/style.css">
 
 
 
 </head>
 
 <body translate="no">
-
+    <div class="sk-folding-cube">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+    </div>
     <div class="container centered">
         <div id="myGraph"></div>
     </div>
@@ -54,7 +59,7 @@
             data.result = result;
             let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
             data.units = uniqueUnits;
-
+            d3.selectAll('.sk-folding-cube').remove();
             chart = renderChart()
                 .svgHeight(window.innerHeight - 30)
                 .svgWidth(window.innerWidth - 30)
@@ -74,7 +79,7 @@
 
 
 
-      function GetData() {
+        function GetData() {
 
             var usernames = Object.keys(data.users).join();
 
