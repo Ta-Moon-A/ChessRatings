@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Chart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/libs/content/style.css">
+    <link rel="stylesheet" type="text/css" href="libs/content/style.css">
 
 
 
@@ -30,8 +30,8 @@
 
     <script>
         var ratingCategories = [{ name: "bulletrating", desc: "BULLET" },
-        { name: "blitzrating", desc: "BLITZ" },
-        { name: "classicalrating", desc: "CLASSICAL" }];
+                                { name: "blitzrating", desc: "BLITZ" },
+                                { name: "classicalrating", desc: "CLASSICAL" }];
 
         data.ratingCategories = ratingCategories;
 
@@ -59,7 +59,9 @@
             data.result = result;
             let uniqueUnits = [...new Set(data.result.map(item => item.unit))];
             data.units = uniqueUnits;
+
             d3.selectAll('.sk-folding-cube').remove();
+          
             chart = renderChart()
                 .svgHeight(window.innerHeight - 30)
                 .svgWidth(window.innerWidth - 30)
