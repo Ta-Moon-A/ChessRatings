@@ -23,7 +23,8 @@ function renderChart(params) {
       fullname: "#4B4948",
       offline: "grey",
       online: "lightgreen",
-      categorytext: ""
+      categorytext: "",
+      unitslegend : "white",
     },
     tooltipRows: [{ left: "User", right: "{fullname}" },
     { left: "Blitz", right: "{blitzrating}" },
@@ -257,29 +258,73 @@ function renderChart(params) {
           });
 
           let uniqueUnits = [...new Set(sortedUserData.map(item => item.unit))];
-          
-          
-          
+
+
+
           //var unitAvgValue = d3.mean(selectedData,function(d) { return +d.value});
 
 
 
-          return uniqueUnits.map(u => { 
-                    return { 
-                        unit: u, 
-                        category: d ,
-                        unitAvg : d3.mean(JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u) , function(i) { return +i[d]}),
-                       // unitMemberNumber : JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u && x[d] >= this.$unitAvg).length
-                  }
-              })
-          }
+          return uniqueUnits.map(u => {
+            return {
+              unit: u,
+              category: d,
+              unitAvg: d3.mean(JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u), function (i) { return +i[d] }),
+              // unitMemberNumber : JSON.parse(JSON.stringify(attrs.data.result)).filter(x => x.unit == u && x[d] >= this.$unitAvg).length
+            }
+          })
+        }
       });
 
       unitGroups.attr('transform', function (d, i) {
         return 'translate(' + (unitGroupWidth * i) + ',' + 0 + ')'
       });
 
-                    
+     
+      var unitLegendGroup = patternify({
+        container: unitGroups,
+        selector: 'unit-legend-group',
+        elementTag: 'g',
+        data: d => [d]
+      });
+
+      unitLegendGroup.attr('transform', d => `translate(0,${calc.chartHeight })`);
+
+
+     
+
+      unitLegendRects = patternify({
+        container: unitLegendGroup,
+        selector: 'unit-legend-rect',
+        elementTag: 'rect',
+        data: d => [d]
+      });
+      
+      unitLegendRects
+      .attr("width", unitGroupWidth)
+      .attr("height", 20)
+      .attr('y', 2)
+      //.attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
+      .attr("fill", function (d) {
+        return color(d.unit);
+      });
+
+      
+      var unitLegendTexts = patternify({
+        container: unitLegendGroup,
+        selector: 'unit-legend-text',
+        elementTag: 'text',
+        data: d => [d]
+      });
+
+
+      unitLegendTexts.text(function(d){ return d.unit;})
+      .attr("fill", attrs.colors.unitslegend)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '10px')
+      .attr('y','15')
+      .attr('x',unitGroupWidth/2)
+      .style('text-transform','uppercase');
 
 
 
@@ -379,7 +424,7 @@ function renderChart(params) {
         .attr('class', 'rating-bar-status-rect')
         .attr("width", ratingBarWidth)
         .attr("height", 10)
-        .attr('rx','5')
+        .attr('rx', '5')
         .attr("fill", function (d) {
           return d.isOnline ? attrs.colors.online : attrs.colors.offline;
         });
@@ -417,7 +462,7 @@ function renderChart(params) {
         data: d => [d]
       });
 
-      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 20})`);
+      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 35})`);
 
 
       var ratingBarNameTexts =
@@ -436,45 +481,45 @@ function renderChart(params) {
         .attr('text-anchor', 'end')
         .style('font-size', '10px')
         .attr('transform', d => `rotate(-45)`);
-      
+
       // ################################## avg lines  ##################################
-      
+
       var unitAvgFlags = patternify({
-                                  container: unitGroups,
-                                  selector: 'unit-group-avg-flag-group',
-                                  elementTag: 'g',
-                                  data: d => [d]  
-                                });
+        container: unitGroups,
+        selector: 'unit-group-avg-flag-group',
+        elementTag: 'g',
+        data: d => [d]
+      });
 
       unitAvgFlags.attr('transform', d => `translate(-10,${scales.yScale(d.unitAvg)})`);
-       
+
 
 
       unitAvgFlags.append('rect')
         .attr("width", 20)
         .attr("height", 10)
-        .attr('x',-20)
+        .attr('x', -20)
         .attr("fill", function (d) {
           return 'grey';
         });
 
-      
+
 
 
       unitAvgFlags.append('rect')
-        .attr("width",  Math.sqrt(50))
+        .attr("width", Math.sqrt(50))
         .attr("height", Math.sqrt(50))
         .attr("fill", function (d) {
           return 'grey';
         })
-        .attr('transform',`rotate(45) `);
+        .attr('transform', `rotate(45) `);
 
 
       unitAvgFlags.append('text')
-      .text(d => {return Math.floor(d.unitAvg)})
-        
-        .attr('x',-20)
-        .attr('y',8)
+        .text(d => { return Math.floor(d.unitAvg) })
+
+        .attr('x', -20)
+        .attr('y', 8)
         .attr("fill", function (d) {
           return 'white';
         })
@@ -490,63 +535,63 @@ function renderChart(params) {
       //   .attr("y2", function(d) { return scales.yScale(d.unitAvg) });          
 
 
-        
-      //################################## legend ######################################
 
-      var legend = patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
+      // //################################## legend ######################################
 
-      var legendItems = patternify({ container: legend, selector: 'legend-item', elementTag: 'g', data: attrs.data.units });
+      // var legend = patternify({ container: chart, selector: 'legend-group', elementTag: 'g' });
 
-
-      var legendLines = patternify({
-        container: legendItems,
-        selector: 'legend-line',
-        elementTag: 'line',
-        data: d => { return attrs.data.units.filter(u => u == d) }
-      });
+      // var legendItems = patternify({ container: legend, selector: 'legend-item', elementTag: 'g', data: attrs.data.units });
 
 
-
-
-      legendLines
-        .style("stroke", function (d, i) { return color(d); })
-        .style("stroke-width", 4)
-        .attr("x1", function (d, i) { return 0; })
-        .attr("y1", attrs.marginTop)
-        .attr("x2", function (d, i) { return 30; })
-        .attr("y2", attrs.marginTop)
-        .attr("class", "legend-line");
-
-      var legendTexts = patternify({
-        container: legendItems,
-        selector: 'legend-text',
-        elementTag: 'text',
-        data: d => { return attrs.data.units.filter(u => u == d) }
-      });
-
-
-      legendTexts
-        .text(function (d, i) { return d; })
-        .attr("x", function (d, i) { return 35; })
-        .attr("y", attrs.marginTop + 5)
-        .attr("class", "legend-text");
+      // var legendLines = patternify({
+      //   container: legendItems,
+      //   selector: 'legend-line',
+      //   elementTag: 'line',
+      //   data: d => { return attrs.data.units.filter(u => u == d) }
+      // });
 
 
 
-      var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
 
-      legendItems.each(function (d, i, arr) {
-        var wrapper = d3.select(this);
-        var text = wrapper.select('text');
-        var bbox = text.node().getBBox();
-        wrapper.attr('transform', 'translate(' + startX + ',-30)');
-        startX += bbox.width + 50;
-      })
+      // legendLines
+      //   .style("stroke", function (d, i) { return color(d); })
+      //   .style("stroke-width", 4)
+      //   .attr("x1", function (d, i) { return 0; })
+      //   .attr("y1", attrs.marginTop)
+      //   .attr("x2", function (d, i) { return 30; })
+      //   .attr("y2", attrs.marginTop)
+      //   .attr("class", "legend-line");
+
+      // var legendTexts = patternify({
+      //   container: legendItems,
+      //   selector: 'legend-text',
+      //   elementTag: 'text',
+      //   data: d => { return attrs.data.units.filter(u => u == d) }
+      // });
+
+
+      // legendTexts
+      //   .text(function (d, i) { return d; })
+      //   .attr("x", function (d, i) { return 35; })
+      //   .attr("y", attrs.marginTop + 5)
+      //   .attr("class", "legend-text");
+
+
+
+      // var startX = ratingCategoryGroupWidth + ((ratingCategoryGroupWidth - (attrs.data.units.length * 70)) / 2);
+
+      // legendItems.each(function (d, i, arr) {
+      //   var wrapper = d3.select(this);
+      //   var text = wrapper.select('text');
+      //   var bbox = text.node().getBBox();
+      //   wrapper.attr('transform', 'translate(' + startX + ',-30)');
+      //   startX += bbox.width + 50;
+      // })
 
       // #####################################  events ############################################################
 
       ratingBars.on('mouseenter', function (d) {
-        
+
         ratingBarRects.attr('filter', calc.filterUrl)
           .filter(function (v) {
 
@@ -554,6 +599,17 @@ function renderChart(params) {
           })
           .attr('filter', 'none')
           .attr('opacity', attrs.slicesOpacity);
+
+        ratingBarStatusRects.attr('filter', calc.filterUrl)
+          .filter(function (v) {
+
+            return v.id != d.id;
+          })
+          .attr('filter', 'none')
+          .attr('opacity', attrs.slicesOpacity);
+
+
+
 
 
         var x = d3.mouse(this)[0];
@@ -573,6 +629,7 @@ function renderChart(params) {
       })
         .on('mouseout', function (d) {
           ratingBarRects.attr('opacity', 1).attr('filter', 'none');
+          ratingBarStatusRects.attr('opacity', 1).attr('filter', 'none');
           displayTooltip(false, chart);
         });
 

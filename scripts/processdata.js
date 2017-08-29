@@ -30,7 +30,12 @@ var data = {
                 werwolfgambit: {
                     fullname: "ვაჩე",
                     unit: 'internal'
+                },
+                kashmarinio :{
+                    fullname: "გურამი",
+                    unit: 'internal'
                 }
+                
 
                 // ,
                 // jsl: {
