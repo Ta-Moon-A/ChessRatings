@@ -7,23 +7,23 @@ var data = {
                     fullname: "გრიშა",
                     unit: 'internal'
                 }, mrx1313: {
-                    fullname: "პაპუნა მიშვიძე",
+                    fullname: "პაპუნა",
                     unit: 'digital'
                 },
                 bumbeishvili: {
-                    fullname: "დათო ბუმბეიშვილი",
+                    fullname: "ბუმბო",
                     unit: 'core'
                 },
                 wisemanika: {
-                    fullname: "ირაკლი ქიქავა",
+                    fullname: "ირაკლი",
                     unit: 'core'
                 },
                 Chaak: {
-                    fullname: "ნიკა ჩაკვეტაძე",
+                    fullname: "ჩაკი",
                     unit: 'qc'
                 },
                 chiquitita: {
-                    fullname: "თამარ ტაკიძე",
+                    fullname: "ტაკიძე",
                     unit: 'qc'
                 }
                 ,
@@ -32,12 +32,12 @@ var data = {
                     unit: 'internal'
                 }
 
-                ,
-                jsl: {
-                    fullname: "xxx",
-                    unit: 'internal'
-                }
-                ,
+                // ,
+                // jsl: {
+                //     fullname: "xxx",
+                //     unit: 'internal'
+                // }
+                // ,
             //     Esgor: {
             //         fullname: "xxx",
             //         unit: 'internal'
@@ -48,50 +48,50 @@ var data = {
             //         unit: 'internal'
             //     }
             //     ,
-                peresin: {
-                    fullname: "xxx",
-                    unit: 'internal'
-                }
-                ,
-                Bermage: {
-                    fullname: "xxx",
-                    unit: 'internal'
-                }
-                ,
-                zettma: {
-                    fullname: "xxx",
-                    unit: 'internal'
-                }
-                ,
-                Waikato: {
-                    fullname: "xxx",
-                    unit: 'core'
-                }
-                ,
-                ljdr: {
-                    fullname: "xxx",
-                    unit: 'core'
-                }
-                ,
+                // peresin: {
+                //     fullname: "xxx",
+                //     unit: 'internal'
+                // }
+                // ,
+                // Bermage: {
+                //     fullname: "xxx",
+                //     unit: 'internal'
+                // }
+                // ,
+                // zettma: {
+                //     fullname: "xxx",
+                //     unit: 'internal'
+                // }
+                // ,
+                // Waikato: {
+                //     fullname: "xxx",
+                //     unit: 'core'
+                // }
+                // ,
+                // ljdr: {
+                //     fullname: "xxx",
+                //     unit: 'core'
+                // }
+                // ,
             //     drg2: {
             //         fullname: "xxx",
             //         unit: 'ba'
             //     }
                 //,
-                aragasgl: {
-                    fullname: "xxx",
-                    unit: 'core'
-                }
-                ,
-                chiquitita: {
-                    fullname: "xxx",
-                    unit: 'core'
-                }
-                ,
-                chiquitita: {
-                    fullname: "xxx",
-                    unit: 'digital'
-                }
+                // aragasgl: {
+                //     fullname: "xxx",
+                //     unit: 'core'
+                // }
+                // ,
+                // chiquitita: {
+                //     fullname: "xxx",
+                //     unit: 'core'
+                // }
+                // ,
+                // chiquitita: {
+                //     fullname: "xxx",
+                //     unit: 'digital'
+                // }
                 
                
             }
