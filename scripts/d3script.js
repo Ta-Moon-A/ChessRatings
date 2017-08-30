@@ -5,9 +5,9 @@ function renderChart(params) {
   // exposed variables
   var attrs = {
     svgWidth: 1000,
-    svgHeight: 600,
+    svgHeight: 800,
     marginTop: 50,
-    marginBottom: 150,
+    marginBottom: 50,
     marginRight: 50,
     marginLeft: 50,
     container: 'body',
@@ -24,7 +24,7 @@ function renderChart(params) {
       offline: "grey",
       online: "lightgreen",
       categorytext: "",
-      unitslegend : "white",
+      unitslegend: "#4B4948",
     },
     tooltipRows: [{ left: "User", right: "{fullname}" },
     { left: "Blitz", right: "{blitzrating}" },
@@ -143,10 +143,10 @@ function renderChart(params) {
         .range([0, calc.chartWidth]);
 
       scales.yScale = d3.scaleLinear()
-        .domain([scales.yMin * 0.8, scales.yMax * 1.2])
+        .domain([scales.yMin * 0.8, scales.yMax * 1.1])
         .range([calc.chartHeight, 0]);
 
-
+      attrs.data.ratingClasses[0].rangeStart = scales.yMin * 0.8;
       //########################################  AXIS ############################################
 
       //var axis = {};
@@ -236,11 +236,72 @@ function renderChart(params) {
         .attr('text-anchor', 'middle')
         .style('font-weight', 'bold')
         .attr('font-size', 50)
-        .attr('y', 40)
+        .attr('y', 10)
         .attr('opacity', 0.4)
         .attr('x', ratingCategoryGroupWidth / 2);
 
 
+
+      // ########################################  CLASSES  ############################################
+
+      var ratingClassGroup = patternify({
+        container: chart,
+        selector: 'classes-group',
+        elementTag: 'g'
+      });
+
+      ratingClassGroup.attr('transform', function () {
+        return 'translate(' + (calc.chartWidth - 15) + ',' + 0 + ')'
+      });
+
+
+      var ratingClasses = patternify({
+        container: ratingClassGroup,
+        selector: 'class-group',
+        elementTag: 'g',
+        data: function () { return attrs.data.ratingClasses.filter(x => x.rangeEnd <= scales.yScale.domain()[1]) }
+      });
+
+
+      ratingClasses.attr('transform', function (d) {
+        if (d.rangeStart > 0) {
+          return `rotate(-90) translate (${-scales.yScale(d.rangeStart)},0)`;
+        }
+        else {
+          return `rotate(-90) translate (${-calc.chartHeight},0)`;
+        }
+      });
+
+      var ratingClassNames = patternify({
+        container: ratingClasses,
+        selector: 'class-name',
+        elementTag: 'text',
+        data: d => [d]
+      });
+
+      ratingClassNames.text(d => d.name)
+      .attr('x', '10')
+      .attr('y', '10')
+        .attr("fill", attrs.colors.unitslegend)
+        .attr('text-anchor', 'start')
+        .style('font-size', '8px')
+        .style('text-transform', 'uppercase');
+
+      var ratingClassLines = patternify({
+        container: ratingClasses,
+        selector: 'class-line',
+        elementTag: 'polyline',
+        data: d => [d]
+      });
+  
+      ratingClassLines.style("stroke", function (d) {
+        return 'grey';
+      })
+      .style('stroke-width', '2px')
+      .style("fill", "none")
+      .attr("points", function (d){ 
+          return `00,10,00,15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd-d.rangeStart))},15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd-d.rangeStart))},10`
+         });
 
 
       // ########################################  Unit Groups ############################################
@@ -280,7 +341,7 @@ function renderChart(params) {
         return 'translate(' + (unitGroupWidth * i) + ',' + 0 + ')'
       });
 
-     
+
       var unitLegendGroup = patternify({
         container: unitGroups,
         selector: 'unit-legend-group',
@@ -288,28 +349,29 @@ function renderChart(params) {
         data: d => [d]
       });
 
-      unitLegendGroup.attr('transform', d => `translate(0,${calc.chartHeight })`);
+      unitLegendGroup.attr('transform', d => `translate(0,${calc.chartHeight})`);
 
 
-     
 
-      unitLegendRects = patternify({
+
+      unitLegendLine = patternify({
         container: unitLegendGroup,
-        selector: 'unit-legend-rect',
-        elementTag: 'rect',
+        selector: 'unit-legend-line',
+        elementTag: 'polyline',
         data: d => [d]
       });
-      
-      unitLegendRects
-      .attr("width", unitGroupWidth)
-      .attr("height", 20)
-      .attr('y', 2)
-      //.attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
-      .attr("fill", function (d) {
-        return color(d.unit);
-      });
 
-      
+
+      unitLegendLine
+        .style("stroke", function (d) {
+          return color(d.unit);
+        })
+        .style('stroke-width', '2px')
+        .style("fill", "none")
+        .attr("points", `00,00,00,10,${unitGroupWidth},10,${unitGroupWidth},00`);
+
+
+
       var unitLegendTexts = patternify({
         container: unitLegendGroup,
         selector: 'unit-legend-text',
@@ -318,13 +380,13 @@ function renderChart(params) {
       });
 
 
-      unitLegendTexts.text(function(d){ return d.unit;})
-      .attr("fill", attrs.colors.unitslegend)
-      .attr('text-anchor', 'middle')
-      .style('font-size', '10px')
-      .attr('y','15')
-      .attr('x',unitGroupWidth/2)
-      .style('text-transform','uppercase');
+      unitLegendTexts.text(function (d) { return d.unit; })
+        .attr("fill", attrs.colors.unitslegend)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '8px')
+        .attr('y', '8')
+        .attr('x', unitGroupWidth / 2)
+        .style('text-transform', 'uppercase');
 
 
 
@@ -462,7 +524,7 @@ function renderChart(params) {
         data: d => [d]
       });
 
-      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 35})`);
+      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 25})`);
 
 
       var ratingBarNameTexts =
@@ -476,7 +538,7 @@ function renderChart(params) {
 
       // fullname text
       ratingBarNameTexts.text(d => d.fullname)
-        .attr('x', ratingBarWidth / 2)
+        .attr('x', ratingBarWidth / 1)
         .attr("fill", attrs.colors.fullname)
         .attr('text-anchor', 'end')
         .style('font-size', '10px')
@@ -500,7 +562,7 @@ function renderChart(params) {
         .attr("height", 10)
         .attr('x', -20)
         .attr("fill", function (d) {
-          return 'grey';
+          return color(d.unit);
         });
 
 
@@ -510,7 +572,7 @@ function renderChart(params) {
         .attr("width", Math.sqrt(50))
         .attr("height", Math.sqrt(50))
         .attr("fill", function (d) {
-          return 'grey';
+          return color(d.unit);
         })
         .attr('transform', `rotate(45) `);
 
@@ -591,7 +653,7 @@ function renderChart(params) {
       // #####################################  events ############################################################
 
       ratingBars.on('mouseenter', function (d) {
-
+        debugger;
         ratingBarRects.attr('filter', calc.filterUrl)
           .filter(function (v) {
 
@@ -608,7 +670,7 @@ function renderChart(params) {
           .attr('filter', 'none')
           .attr('opacity', attrs.slicesOpacity);
 
-
+          unitAvgFlags.attr('opacity', attrs.slicesOpacity);
 
 
 
@@ -630,17 +692,42 @@ function renderChart(params) {
         .on('mouseout', function (d) {
           ratingBarRects.attr('opacity', 1).attr('filter', 'none');
           ratingBarStatusRects.attr('opacity', 1).attr('filter', 'none');
+          unitAvgFlags.attr('opacity', 1).attr('filter', 'none');
           displayTooltip(false, chart);
         });
 
 
 
 
+        ratingClasses.on('mouseenter', function (d) {
+                  debugger;
+                  ratingBarRects.attr('filter', calc.filterUrl)
 
+                    .filter(function (v) {
+                       debugger;
+                      return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
+                    })
+                    .attr('filter', 'none')
+                    .attr('opacity', attrs.slicesOpacity);
+          
+                  ratingBarStatusRects.attr('filter', calc.filterUrl)
+                    .filter(function (v) {
+          
+                      return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
+                    })
+                    .attr('filter', 'none')
+                    .attr('opacity', attrs.slicesOpacity);
+          
+                    unitAvgFlags.attr('opacity', attrs.slicesOpacity);
+          
+                })
+                  .on('mouseout', function (d) {
+                    ratingBarRects.attr('opacity', 1).attr('filter', 'none');
+                    ratingBarStatusRects.attr('opacity', 1).attr('filter', 'none');
+                    unitAvgFlags.attr('opacity', 1).attr('filter', 'none');
+                  });
 
-
-
-      function GetMaxMemberNumberInUnits(initialData) {
+       function GetMaxMemberNumberInUnits(initialData) {
         var nestedData = d3.nest().key(function (d) { return d.unit; })
           .rollup(function (leaves) {
             return leaves.length;
