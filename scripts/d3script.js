@@ -169,7 +169,7 @@ function renderChart(params) {
         .range([0, calc.chartWidth]);
 
       scales.yScale = d3.scaleLinear()
-        .domain([scales.yMin * 0.8, scales.yMax * 1.1])
+        .domain([scales.yMin * 0.8, scales.yMax * 1.2])
         .range([calc.chartHeight, 0]);
 
       attrs.data.ratingClasses[0].rangeStart = scales.yMin * 0.8;
