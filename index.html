@@ -8,7 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="libs/content/style.css">
 
+    <style>
+        /* #myGraph {
+            position: relative;
+            width: 40%;
+        }
 
+        .container {
+            width: 100%;
+        } */
+    </style>
 
 </head>
 
@@ -30,16 +39,16 @@
 
     <script>
         var ratingCategories = [{ name: "bulletrating", desc: "BULLET" },
-                                { name: "blitzrating", desc: "BLITZ" },
-                                { name: "classicalrating", desc: "CLASSICAL" }];
+        { name: "blitzrating", desc: "BLITZ" },
+        { name: "classicalrating", desc: "CLASSICAL" }];
 
-        var ratingClasses = [{ name : "Class C", rangeStart : 906 , rangeEnd : 1599},
-                             { name : "Class B",rangeStart : 1600 , rangeEnd : 1799},
-                             { name : "Class A", rangeStart : 1800 , rangeEnd : 1999},
-                             { name : "Expert", rangeStart : 2000 , rangeEnd : 2199},
-                             { name : "Master", rangeStart : 2200 , rangeEnd : 2399},
-                             { name : "Senior master", rangeStart : 2400 , rangeEnd : 2599},
-                             { name : "Grandmaster", rangeStart : 2600 , rangeEnd : 2300}];
+        var ratingClasses = [{ name: "Class C", rangeStart: 906, rangeEnd: 1599 },
+        { name: "Class B", rangeStart: 1600, rangeEnd: 1799 },
+        { name: "Class A", rangeStart: 1800, rangeEnd: 1999 },
+        { name: "Expert", rangeStart: 2000, rangeEnd: 2199 },
+        { name: "Master", rangeStart: 2200, rangeEnd: 2399 },
+        { name: "Senior master", rangeStart: 2400, rangeEnd: 2599 },
+        { name: "Grandmaster", rangeStart: 2600, rangeEnd: 2300 }];
 
 
 
@@ -71,7 +80,7 @@
             data.units = uniqueUnits;
 
             d3.selectAll('.sk-folding-cube').remove();
-          
+
             chart = renderChart()
                 .svgHeight(window.innerHeight - 30)
                 .svgWidth(window.innerWidth - 30)

@@ -4,6 +4,7 @@ function renderChart(params) {
 
   // exposed variables
   var attrs = {
+    id: 'id' + Math.floor((Math.random() * 1000000)),
     svgWidth: 1000,
     svgHeight: 800,
     marginTop: 50,
@@ -11,6 +12,7 @@ function renderChart(params) {
     marginRight: 50,
     marginLeft: 50,
     container: 'body',
+    firstTime: true,
     data: null,
     spacing: {
       bar: 2,
@@ -72,6 +74,7 @@ function renderChart(params) {
 
       //drawing containers
       var container = d3.select(this);
+      container.html('');
 
       //add svg
       var svg = patternify({ container: container, selector: 'svg-chart-container', elementTag: 'svg' })
@@ -81,6 +84,27 @@ function renderChart(params) {
         .style('font-family', 'Helvetica')
         .attr("viewBox", "0 0 " + attrs.svgWidth + " " + attrs.svgHeight)
         .attr("preserveAspectRatio", "xMidYMid meet");
+
+
+      d3.select(window).on('resize.' + attrs.id, function () {
+        setDimensions();
+      })
+
+
+      function setDimensions() {
+        var width = container.node().getBoundingClientRect().width;
+       
+        main.svgWidth(width);
+        container.call(main);
+
+
+      }
+
+      if (attrs.firstTime) {
+        attrs.firstTime = false;
+        setDimensions();
+      }
+
 
       //add container g element
       var chart = patternify({ container: svg, selector: 'chart', elementTag: 'g' })
@@ -280,8 +304,8 @@ function renderChart(params) {
       });
 
       ratingClassNames.text(d => d.name)
-      .attr('x', '10')
-      .attr('y', '10')
+        .attr('x', '10')
+        .attr('y', '10')
         .attr("fill", attrs.colors.unitslegend)
         .attr('text-anchor', 'start')
         .style('font-size', '8px')
@@ -293,15 +317,15 @@ function renderChart(params) {
         elementTag: 'polyline',
         data: d => [d]
       });
-  
+
       ratingClassLines.style("stroke", function (d) {
         return 'grey';
       })
-      .style('stroke-width', '2px')
-      .style("fill", "none")
-      .attr("points", function (d){ 
-          return `00,10,00,15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd-d.rangeStart))},15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd-d.rangeStart))},10`
-         });
+        .style('stroke-width', '2px')
+        .style("fill", "none")
+        .attr("points", function (d) {
+          return `00,10,00,15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd - d.rangeStart))},15,${scales.yScale(scales.yScale.domain()[1] - (d.rangeEnd - d.rangeStart))},10`
+        });
 
 
       // ########################################  Unit Groups ############################################
@@ -670,7 +694,7 @@ function renderChart(params) {
           .attr('filter', 'none')
           .attr('opacity', attrs.slicesOpacity);
 
-          unitAvgFlags.attr('opacity', attrs.slicesOpacity);
+        unitAvgFlags.attr('opacity', attrs.slicesOpacity);
 
 
 
@@ -699,35 +723,35 @@ function renderChart(params) {
 
 
 
-        ratingClasses.on('mouseenter', function (d) {
-                  debugger;
-                  ratingBarRects.attr('filter', calc.filterUrl)
+      ratingClasses.on('mouseenter', function (d) {
+        debugger;
+        ratingBarRects.attr('filter', calc.filterUrl)
 
-                    .filter(function (v) {
-                       debugger;
-                      return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
-                    })
-                    .attr('filter', 'none')
-                    .attr('opacity', attrs.slicesOpacity);
-          
-                  ratingBarStatusRects.attr('filter', calc.filterUrl)
-                    .filter(function (v) {
-          
-                      return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
-                    })
-                    .attr('filter', 'none')
-                    .attr('opacity', attrs.slicesOpacity);
-          
-                    unitAvgFlags.attr('opacity', attrs.slicesOpacity);
-          
-                })
-                  .on('mouseout', function (d) {
-                    ratingBarRects.attr('opacity', 1).attr('filter', 'none');
-                    ratingBarStatusRects.attr('opacity', 1).attr('filter', 'none');
-                    unitAvgFlags.attr('opacity', 1).attr('filter', 'none');
-                  });
+          .filter(function (v) {
+            debugger;
+            return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
+          })
+          .attr('filter', 'none')
+          .attr('opacity', attrs.slicesOpacity);
 
-       function GetMaxMemberNumberInUnits(initialData) {
+        ratingBarStatusRects.attr('filter', calc.filterUrl)
+          .filter(function (v) {
+
+            return v[v.category] < d.rangeStart || v[v.category] > d.rangeEnd;
+          })
+          .attr('filter', 'none')
+          .attr('opacity', attrs.slicesOpacity);
+
+        unitAvgFlags.attr('opacity', attrs.slicesOpacity);
+
+      })
+        .on('mouseout', function (d) {
+          ratingBarRects.attr('opacity', 1).attr('filter', 'none');
+          ratingBarStatusRects.attr('opacity', 1).attr('filter', 'none');
+          unitAvgFlags.attr('opacity', 1).attr('filter', 'none');
+        });
+
+      function GetMaxMemberNumberInUnits(initialData) {
         var nestedData = d3.nest().key(function (d) { return d.unit; })
           .rollup(function (leaves) {
             return leaves.length;

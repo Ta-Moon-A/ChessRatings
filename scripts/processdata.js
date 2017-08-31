@@ -37,11 +37,11 @@ var data = {
                 }
                 
 
-                // ,
-                // jsl: {
-                //     fullname: "xxx",
-                //     unit: 'internal'
-                // }
+                ,
+                tamart: {
+                    fullname: "თამო",
+                    unit: 'internal'
+                }
                 // ,
             //     Esgor: {
             //         fullname: "xxx",
