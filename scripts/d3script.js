@@ -768,6 +768,14 @@ function renderChart(params) {
       }
 
 
+      ratingBarRects.on('click', function(d){
+       
+         window.open("https://lichess.org/@/" + d.username, "_blank");
+
+      });
+
+      // ############################################   helpers ###################################################
+
 
       function GetTooltipPosition(userInfo) {
         var position = {
