@@ -7,6 +7,7 @@ function renderChart(params) {
     id: 'id' + Math.floor((Math.random() * 1000000)),
     svgWidth: 1000,
     svgHeight: 800,
+    minWindowWidth : 800,
     marginTop: 50,
     marginBottom: 50,
     marginRight: 50,
@@ -92,8 +93,9 @@ function renderChart(params) {
 
 
       function setDimensions() {
-        var width = container.node().getBoundingClientRect().width;
-       
+        var width = container.node().getBoundingClientRect().width > attrs.minWindowWidth ? container.node().getBoundingClientRect().width : attrs.minWindowWidth;
+        
+
         main.svgWidth(width);
         container.call(main);
 
@@ -259,7 +261,7 @@ function renderChart(params) {
         .attr('alignment-baseline', 'hanging')
         .attr('text-anchor', 'middle')
         .style('font-weight', 'bold')
-        .attr('font-size', 50)
+        .attr('font-size', '2.5vw')
         .attr('y', 10)
         .attr('opacity', 0.4)
         .attr('x', ratingCategoryGroupWidth / 2);
@@ -407,7 +409,7 @@ function renderChart(params) {
       unitLegendTexts.text(function (d) { return d.unit; })
         .attr("fill", attrs.colors.unitslegend)
         .attr('text-anchor', 'middle')
-        .style('font-size', '8px')
+        .style('font-size', '0.6vw')
         .attr('y', '8')
         .attr('x', unitGroupWidth / 2)
         .style('text-transform', 'uppercase');
@@ -539,7 +541,7 @@ function renderChart(params) {
       ratingBarPointTexts
         .text(d => d[d.category])
         .attr("fill", attrs.colors.point)
-        .style('font-size', '8px')
+        .style('font-size', '0.6vw')
         .attr('transform', 'rotate(-90)')
 
       var ratingBarNameTextGroups = patternify({
@@ -566,7 +568,7 @@ function renderChart(params) {
         .attr('x', ratingBarWidth / 1)
         .attr("fill", attrs.colors.fullname)
         .attr('text-anchor', 'end')
-        .style('font-size', '10px')
+        .style('font-size', '0.6vw')
         .attr('transform', d => `rotate(-45)`);
 
       // ################################## avg lines  ##################################
