@@ -551,7 +551,7 @@ function renderChart(params) {
         data: d => [d]
       });
 
-      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 25})`);
+      ratingBarNameTextGroups.attr('transform', d => `translate(0,${calc.chartHeight - scales.yScale(d[d.category]) + 30})`);
 
 
       var ratingBarNameTexts =
