@@ -442,78 +442,79 @@ function renderChart(params) {
 
 
       // ----------------------------------------------------------
-      // var ratingBarRects = patternify({
-      //   container: ratingBars,
-      //   selector: 'rating-bar-rect',
-      //   elementTag: 'rect',
-      //   data: d => [d]
-      // });
+      var ratingBarRects = patternify({
+        container: ratingBars,
+        selector: 'rating-bar-rect',
+        elementTag: 'rect',
+        data: d => [d]
+      });
 
 
 
-      // // rating 
-      // ratingBarRects
-      //   .attr("width", ratingBarWidth)
-      //   .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
-      //   .attr("fill", function (d) {
-      //     return color(d.unit);
-      //   });
-
-
-      var ratingBarRects = ratingBars.selectAll('.rating-bar-rect').data(d => [d]);
-
-      var ratingBarRectsExit = ratingBarRects.exit().remove();
-
-      ratingBarRects.enter()
-        .append('rect')
+      // rating 
+      ratingBarRects
         .attr("width", ratingBarWidth)
-        .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
-        .attr("height", function (d) { return 0; })
-        .merge(ratingBarRects)
-
-        .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]) })
-        .attr("height", function (d) { return 0 })
-
-        //.transition().duration(1000)
-        .attr('class', 'rating-bar-rect')
-        .attr("width", ratingBarWidth)
-        .attr('y', 0)
         .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
         .attr("fill", function (d) {
           return color(d.unit);
         });
 
 
-      //---------------------------------------------------------------
-      // var ratingBarStatusRects = patternify({
-      //   container: ratingBars,
-      //   selector: 'rating-bar-status-rect',
-      //   elementTag: 'rect',
-      //   data: d => [d]
-      // });
+      // var ratingBarRects = ratingBars.selectAll('.rating-bar-rect').data(d => [d]);
 
+      // var ratingBarRectsExit = ratingBarRects.exit().remove();
 
-      // // offline-online
-      // ratingBarStatusRects
+      // ratingBarRects.enter()
+      //   .append('rect')
       //   .attr("width", ratingBarWidth)
-      //   .attr("height", 10)
+      //   .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
+      //   .attr("height", function (d) { return 0; })
+      //   .merge(ratingBarRects)
+
+      //   .attr('y', function (d) { return calc.chartHeight - scales.yScale(d[d.category]) })
+      //   .attr("height", function (d) { return 0 })
+
+      //   //.transition().duration(1000)
+      //   .attr('class', 'rating-bar-rect')
+      //   .attr("width", ratingBarWidth)
+      //   .attr('y', 0)
+      //   .attr("height", function (d) { return calc.chartHeight - scales.yScale(d[d.category]); })
       //   .attr("fill", function (d) {
-      //     return d.isOnline ? attrs.colors.online : attrs.colors.offline;
+      //     return color(d.unit);
       //   });
 
 
-      var ratingBarStatusRects = ratingBars.selectAll('.rating-bar-status-rect').data(d => [d]);
-      var ratingBarStatusRectsExit = ratingBarStatusRects.exit().remove();
-      ratingBarStatusRects.enter()
-        .append('rect')
-        .merge(ratingBarStatusRects)
-        .attr('class', 'rating-bar-status-rect')
+      //---------------------------------------------------------------
+      var ratingBarStatusRects = patternify({
+        container: ratingBars,
+        selector: 'rating-bar-status-rect',
+        elementTag: 'rect',
+        data: d => [d]
+      });
+
+
+      // offline-online
+      ratingBarStatusRects
         .attr("width", ratingBarWidth)
         .attr("height", 10)
         .attr('rx', '5')
         .attr("fill", function (d) {
           return d.isOnline ? attrs.colors.online : attrs.colors.offline;
         });
+
+
+      // var ratingBarStatusRects = ratingBars.selectAll('.rating-bar-status-rect').data(d => [d]);
+      // var ratingBarStatusRectsExit = ratingBarStatusRects.exit().remove();
+      // ratingBarStatusRects.enter()
+      //   .append('rect')
+      //   .merge(ratingBarStatusRects)
+      //   .attr('class', 'rating-bar-status-rect')
+      //   .attr("width", ratingBarWidth)
+      //   .attr("height", 10)
+      //   .attr('rx', '5')
+      //   .attr("fill", function (d) {
+      //     return d.isOnline ? attrs.colors.online : attrs.colors.offline;
+      //   });
 
 
 
