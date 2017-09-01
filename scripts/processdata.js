@@ -35,6 +35,10 @@ var data = {
                     fullname: "კაშმაძე",
                     unit: 'ba'
                 },
+                tamart : {
+                   fullname: "თამო",
+                   unit: 'internal'          
+                }
              }
         };
 
