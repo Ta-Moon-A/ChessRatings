@@ -38,6 +38,10 @@ var data = {
                 tamart : {
                    fullname: "თამო",
                    unit: 'internal'          
+                },
+                giorga10 : {
+                   fullname: "გიორგი",
+                   unit: 'internal'          
                 }
              }
         };
