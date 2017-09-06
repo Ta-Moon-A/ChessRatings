@@ -18,7 +18,7 @@ var data = {
                     fullname: "ქიქავა",
                     unit: 'internal'
                 },
-                Chaak: {
+                Chaaak: {
                     fullname: "ჩაკი",
                     unit: 'internal'
                 },
