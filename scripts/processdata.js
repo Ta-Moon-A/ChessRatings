@@ -32,7 +32,7 @@ var data = {
                     unit: 'support'
                 },
                 kashmarinio :{
-                    fullname: "კაშმაძე",
+                    fullname: "გურამა",
                     unit: 'ba'
                 },
                 tamart : {
